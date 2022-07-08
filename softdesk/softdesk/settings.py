@@ -101,7 +101,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Custom user model
 AUTH_USER_MODEL = 'users.User'
+
+# JSON Web Tokens
+REST_FRAMEWORK = {
+  'DEFAULT_AUTHENTICATION_CLASSES': (
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
+  ),
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
