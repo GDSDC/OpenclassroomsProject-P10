@@ -44,10 +44,6 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserLoginSerializer(serializers.ModelSerializer):
-
-    # TODO
-
 
 
 
