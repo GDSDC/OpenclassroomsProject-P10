@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from api.serializers import SignUpSerializer
+from api.serializers import UserSignUpSerializer, UserLoginSerializer
 from django.contrib.auth import authenticate, login
 
 
@@ -14,7 +14,7 @@ class SignUpAPIView(APIView):
 
     def post(self, request):
         user = request.data
-        serializer = SignUpSerializer(data=user)
+        serializer = UserSignUpSerializer(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -53,23 +53,31 @@ class SignUpAPIView(APIView):
     #                         status=status.HTTP_400_BAD_REQUEST)
 
 
+# class Login(APIView):
+#     """API class view for login in"""
+#
+#     def post(self, request):
+#         data = dict(request.POST.items())
+#         try:
+#             user_email = data['email']
+#             user_password = data['password']
+#
+#             user = authenticate(email=user_email, password=user_password)
+#             if user is not None and user.is_active:
+#                 login(request, user)
+#                 return Response(f'User {user_email} logged in successfully')
+#             else:
+#                 return Response('INVAVID LOGIN CREDENTIALS', status=status.HTTP_401_UNAUTHORIZED)
+#
+#
+#
+#         except KeyError:
+#             return Response('WRONG DATA FORMAT. Please enter email and password.', status=status.HTTP_400_BAD_REQUEST)
+
+
 class Login(APIView):
     """API class view for login in"""
 
-    def post(self, request):
-        data = dict(request.POST.items())
-        try:
-            user_email = data['email']
-            user_password = data['password']
-
-            user = authenticate(email=user_email, password=user_password)
-            if user is not None and user.is_active:
-                login(request, user)
-                return Response(f'User {user_email} logged in successfully')
-            else:
-                return Response('INVAVID LOGIN CREDENTIALS', status=status.HTTP_401_UNAUTHORIZED)
+    # TODO
 
 
-
-        except KeyError:
-            return Response('WRONG DATA FORMAT. Please enter email and password.', status=status.HTTP_400_BAD_REQUEST)

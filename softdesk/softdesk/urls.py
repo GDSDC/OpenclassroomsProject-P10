@@ -20,6 +20,5 @@ from api.views import SignUpAPIView, Login
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('signup/', SignUpAPIView.as_view()),
-    path('login/', Login.as_view()),
+    path('', include('api.urls')),
 ]

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import User
 from rest_framework.validators import UniqueValidator
+from django.contrib.auth import authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-class SignUpSerializer(serializers.ModelSerializer):
+class UserSignUpSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)
 
@@ -41,3 +42,12 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class UserLoginSerializer(serializers.ModelSerializer):
+
+    # TODO
+
+
+
+
