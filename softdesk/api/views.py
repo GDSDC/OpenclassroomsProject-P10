@@ -1,11 +1,8 @@
-from django.core.validators import validate_email
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from users.models import User
-from users.serializers import UserSerializer, SignUpSerializer
-from django.core.exceptions import ValidationError
+from api.serializers import SignUpSerializer
 from django.contrib.auth import authenticate, login
 
 
