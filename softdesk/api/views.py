@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from api.serializers import UserSignUpSerializer
 from django.contrib.auth import authenticate, login
-from users.models import User
+from core.users.models import User
 from rest_framework.decorators import api_view, permission_classes
 
 

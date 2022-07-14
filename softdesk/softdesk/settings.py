@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api',
-    'users',
+    'core.users',
 ]
 
 MIDDLEWARE = [
@@ -117,9 +117,6 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
-SIMPLE_JWT = {
-    'USER_ID_FIELD': 'user_id'
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
