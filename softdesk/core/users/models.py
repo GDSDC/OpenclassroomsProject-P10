@@ -3,6 +3,7 @@ from django.db import models, transaction
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
+from core.projects.models import Project, PROJECT_PERMISSIONS
 
 
 class UserManager(BaseUserManager):
@@ -56,3 +57,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         return self
+
+
+class Contributor(models.Model):
+    """Contributor class - through class between User and Project"""
+
+    user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    project_id = models.ForeignKey(to=Project, on_delete=models.CASCADE)
+    # permission = models.TextChoices(PROJECT_PERMISSIONS)
+    role = models.CharField(max_length=60, blank=True)
