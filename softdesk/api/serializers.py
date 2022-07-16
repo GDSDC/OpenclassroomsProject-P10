@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from core.users.models import User
+from core.projects.models import Project
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth import authenticate
 
@@ -19,7 +20,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password1', 'password2', 'first_name', 'last_name')
+        fields = ['email', 'password1', 'password2', 'first_name', 'last_name']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True}
@@ -44,6 +45,23 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         return user
 
 
+class ProjectCreationSerializer(serializers.ModelSerializer):
+    """Serializer class for creating a project"""
 
+    class Meta:
+        model = Project
+        fields = ['title', 'description', 'type']
 
+    def validate(self, attrs):
+        return attrs
 
+    def create(self,validated_data):
+        project = Project.objects.create(
+            title=validated_data['title'],
+            description=validated_data['description'],
+            type=validated_data['type'],
+            author_user_id=self.context['request'].user
+        )
+        project.save()
+
+        return project
