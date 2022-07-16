@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Contributor(models.Model):
     """Contributor class - through class between User and Project"""
 
-    user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     project_id = models.ForeignKey(to=Project, on_delete=models.CASCADE)
     # permission = models.TextChoices(PROJECT_PERMISSIONS)
     role = models.CharField(max_length=60, blank=True)
