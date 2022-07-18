@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from api.serializers import UserSignUpSerializer, ProjectCreationSerializer
@@ -7,6 +8,7 @@ from django.contrib.auth import authenticate, login
 from core.users.models import User
 from core.projects.models import Project
 import json
+from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view, permission_classes
 
 
@@ -42,13 +44,9 @@ class Projects(APIView):
     def get(self, request):
         """Get list of projects created by user"""
         user = request.user
-        projects = []
         user_projects = Project.objects.filter(author_user_id=user)
-        for project in user_projects:
-            projects.append(self.serializer_class(project).data)
-        json_data = json.dumps(projects)
-        # TODO : work on proper json result
-        return Response(json_data, status=status.HTTP_201_CREATED)
+        projects = self.serializer_class(user_projects, many=True)
+        return JsonResponse(projects.data, safe=False, status=status.HTTP_200_OK)
 
     def post(self, request):
         """Create new Project"""
