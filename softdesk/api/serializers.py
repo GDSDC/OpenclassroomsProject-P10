@@ -45,17 +45,15 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         return user
 
 
-class ProjectCreationSerializer(serializers.ModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer):
     """Serializer class for creating a project"""
 
     class Meta:
         model = Project
         fields = ['title', 'description', 'type']
 
-    def validate(self, attrs):
-        return attrs
 
-    def create(self,validated_data):
+    def create(self, validated_data):
         project = Project.objects.create(
             title=validated_data['title'],
             description=validated_data['description'],
@@ -63,6 +61,11 @@ class ProjectCreationSerializer(serializers.ModelSerializer):
             author_user_id=self.context['request'].user
         )
         project.save()
-
         return project
 
+    def update(self, instance, validated_data):
+        instance.title = validated_data['title']
+        instance.description = validated_data['description']
+        instance.type = validated_data['type']
+        instance.save()
+        return instance

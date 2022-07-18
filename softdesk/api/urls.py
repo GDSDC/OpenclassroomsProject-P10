@@ -1,5 +1,5 @@
 from django.urls import path
-from api.views import SignUpAPIView, TestAuth, Projects
+from api.views import SignUpAPIView, TestAuth, GeneralProjects, Projects
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -8,9 +8,9 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('signup/', SignUpAPIView.as_view()),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('projects/', Projects.as_view()),
-    # TODO : work on two path lines for same root but one for post and other for get
-    #  the idea is to make separate class APIView with better naming
+    path('projects/', GeneralProjects.as_view()),
+    path('projects/<int:project_id>/', Projects.as_view()),
+
 
     # test
     path('me/', TestAuth.as_view(), name='me'),
