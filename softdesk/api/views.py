@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from api.permissions import IsOwner
 from api.serializers import UserSignUpSerializer, ProjectSerializer
 from django.contrib.auth import authenticate, login
 from core.users.models import User
@@ -28,7 +29,7 @@ class SignUpAPIView(APIView):
 
 
 class TestAuth(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         content = {'message': 'Authenticated!',
@@ -38,7 +39,7 @@ class TestAuth(APIView):
 
 class GeneralProjects(APIView):
     """API View for creating a project and getting list of all projects for a user"""
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     serializer_class = ProjectSerializer
 
     def get(self, request):
@@ -59,7 +60,7 @@ class GeneralProjects(APIView):
 
 class Projects(APIView):
     """API View for getting infos, updating infos of a single project and deleting it"""
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated, IsOwner]
     serializer_class = ProjectSerializer
 
     def get(self, request, project_id):
@@ -73,7 +74,7 @@ class Projects(APIView):
         """Update a project by project_id"""
         project_updated_data = request.data
         project_to_update = Project.objects.get(id=project_id)
-        serializer = self.serializer_class(project_to_update,data=project_updated_data)
+        serializer = self.serializer_class(project_to_update, data=project_updated_data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -83,4 +84,4 @@ class Projects(APIView):
         user = request.user
         project_to_delete = Project.objects.get(author_user_id=user, id=project_id)
         project_to_delete.delete()
-        return Response(f'Project "{project_id}" deleted !', status=status.HTTP_200_OK)
+        return Response(f"Project '{project_id}' deleted !", status=status.HTTP_200_OK)
