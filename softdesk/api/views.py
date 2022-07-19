@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from api.permissions import IsOwner
 from api.serializers import UserSignUpSerializer, ProjectSerializer
 from django.contrib.auth import authenticate, login
 from core.users.models import User
@@ -11,6 +10,7 @@ from core.projects.models import Project
 import json
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view, permission_classes
+from core.projects.services import get_project
 
 
 class SignUpAPIView(APIView):
@@ -60,7 +60,7 @@ class GeneralProjects(APIView):
 
 class Projects(APIView):
     """API View for getting infos, updating infos of a single project and deleting it"""
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated]
     serializer_class = ProjectSerializer
 
     def get(self, request, project_id):
@@ -72,16 +72,30 @@ class Projects(APIView):
 
     def put(self, request, project_id):
         """Update a project by project_id"""
+        user = request.user
         project_updated_data = request.data
-        project_to_update = Project.objects.get(id=project_id)
-        serializer = self.serializer_class(project_to_update, data=project_updated_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        project_to_update , message, status_code = get_project(project_id=project_id, user=user)
+        if project_to_update is None:
+            message = message
+            status_code = status_code
+        else:
+            serializer = self.serializer_class(project_to_update, data=project_updated_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            message = serializer.data
+            status_code = status.HTTP_200_OK
+        return Response(message, status=status_code)
+
 
     def delete(self, request, project_id):
         """Delete project by project_id"""
         user = request.user
-        project_to_delete = Project.objects.get(author_user_id=user, id=project_id)
-        project_to_delete.delete()
-        return Response(f"Project '{project_id}' deleted !", status=status.HTTP_200_OK)
+        project_to_delete, message, status_code = get_project(project_id=project_id, user=user)
+        if project_to_delete is None:
+            message = message
+            status_code = status_code
+        else:
+            project_to_delete.delete()
+            message = f"PROJECT '{project_id}' DELETED !"
+            status_code = status.HTTP_200_OK
+        return Response(message, status=status_code)
