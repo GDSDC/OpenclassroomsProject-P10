@@ -20,30 +20,32 @@ def project_exists(project_id: int) -> bool:
     return Project.objects.filter(id=project_id).exists()
 
 
-def is_project_author(project_id: int, user: User) -> bool:
+def is_project_author(project_id: int, author: User) -> bool:
     """Function that check if the user is the author of the poject"""
 
     project = Project.objects.get(id=project_id)
-    if project.author_user_id == user:
+    if project.author_user_id == author:
         return True
     else:
         return False
 
 
-def get_project(project_id: int, user: User) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+def get_project(project_id: int, author: Optional[User] = None) \
+        -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to get project if it exists and if user is the author"""
 
     if not project_exists(project_id=project_id):
         result = (None,
                   RESPONSES['project_not_found']['message'],
                   RESPONSES['project_not_found']['status'])
-    elif not is_project_author(project_id=project_id, user=user):
-        result = (None,
-                  RESPONSES['not_project_author']['message'],
-                  RESPONSES['not_project_author']['status'])
     else:
         project = Project.objects.get(id=project_id)
         result = (project, None, None)
+
+        if not is_project_author(project_id=project_id, author=author) and author is not None:
+            result = (None,
+                      RESPONSES['not_project_author']['message'],
+                      RESPONSES['not_project_author']['status'])
 
     return result
 
