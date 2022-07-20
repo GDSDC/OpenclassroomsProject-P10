@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.users.models import User
+from core.users.models import User, Contributor
 from core.projects.models import Project
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth import authenticate
@@ -52,15 +52,21 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ['title', 'description', 'type']
 
-
     def create(self, validated_data):
+        # Creating project
         project = Project.objects.create(
             title=validated_data.get('title'),
-            description=validated_data.get('description',''),
-            type=validated_data.get('type',''),
+            description=validated_data.get('description', ''),
+            type=validated_data.get('type', ''),
             author_user_id=self.context.get('request').user
         )
         project.save()
+        # Creating initial Contributor
+        first_contributor = Contributor.objects.create(user_id=project.author_user_id,
+                                                       project_id=project,
+                                                       permission='RW',
+                                                       role='A')
+        first_contributor.save()
         return project
 
     def update(self, instance, validated_data):
