@@ -6,9 +6,13 @@ from rest_framework import status
 RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
                                    'status': status.HTTP_404_NOT_FOUND},
              'not_project_author': {'message': 'ACCESS FORBIDDEN. PLEASE CONTACT PROJECT AUTHOR.',
-                                    'status': status.HTTP_403_FORBIDDEN}
+                                    'status': status.HTTP_403_FORBIDDEN},
+             'user_not_found': {'message': 'USER NOT FOUND. WRONG ID.',
+                                'status': status.HTTP_404_NOT_FOUND}
              }
 
+
+# ----------- GETTING PROJECT BY ID ------------------
 
 def project_exists(project_id: int) -> bool:
     """Function that check if the project exists in database"""
@@ -40,5 +44,27 @@ def get_project(project_id: int, user: User) -> Tuple[Optional[Project], Optiona
     else:
         project = Project.objects.get(id=project_id)
         result = (project, None, None)
+
+    return result
+
+
+# ----------- GETTING USER BY ID ------------------
+
+def user_exists(user_id: int) -> bool:
+    """Function that check if users exists in database"""
+
+    return User.objects.filter(id=user_id).exists()
+
+
+def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+    """Function to get a user if it exists"""
+
+    if not user_exists(user_id=user_id):
+        result = (None,
+                  RESPONSES['user_not_found']['message'],
+                  RESPONSES['user_not_found']['status'])
+    else:
+        user = User.objects.get(id=user_id)
+        result = (user, None, None)
 
     return result
