@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.db import models, transaction
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
-from core.projects.models import Project, PROJECT_PERMISSIONS
+from core.projects.models import Project
+
 
 
 class UserManager(BaseUserManager):
@@ -62,7 +64,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Contributor(models.Model):
     """Contributor class - through class between User and Project"""
 
+    class Permission(models.TextChoices):
+        READONLY = 'R', _('ReadOnly')
+        READANDWRITE = 'RW', _('ReadAndWrite')
+
+    class Role(models.TextChoices):
+        AUTHOR = 'A', _('Author')
+        CONTRIBUTOR = 'C', _('Contributor')
+
     user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     project_id = models.ForeignKey(to=Project, on_delete=models.CASCADE)
-    # permission = models.TextChoices(PROJECT_PERMISSIONS)
-    role = models.CharField(max_length=60, blank=True)
+    permission = models.CharField(max_length=2,choices=Permission.choices, default=Permission.READANDWRITE)
+    role = models.CharField(max_length=1,choices=Role.choices, default=Role.CONTRIBUTOR)

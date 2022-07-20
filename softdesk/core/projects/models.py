@@ -1,8 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-PROJECT_PERMISSIONS = [('EXEMPLE_A_COMPLETER','IDEM')]
-#TODO : remplir les permissions possibles pour les contributeurs dans le cadre d'un projet au format valide
 
 class Project(models.Model):
     """Projects class"""
