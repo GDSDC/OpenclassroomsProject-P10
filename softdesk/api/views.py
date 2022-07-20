@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from api.serializers import UserSignUpSerializer, ProjectSerializer
+from api.serializers import UserSignUpSerializer, ProjectSerializer, UserSerializer
 from django.contrib.auth import authenticate, login
-from core.users.models import User
+from core.users.models import User, Contributor
 from core.projects.models import Project
 import json
 from rest_framework.renderers import JSONRenderer
@@ -74,7 +74,7 @@ class Projects(APIView):
         """Update a project by project_id"""
         user = request.user
         project_updated_data = request.data
-        project_to_update , message, status_code = get_project(project_id=project_id, user=user)
+        project_to_update, message, status_code = get_project(project_id=project_id, author=user)
         if project_to_update is None:
             message = message
             status_code = status_code
@@ -86,11 +86,10 @@ class Projects(APIView):
             status_code = status.HTTP_200_OK
         return Response(message, status=status_code)
 
-
     def delete(self, request, project_id):
         """Delete project by project_id"""
         user = request.user
-        project_to_delete, message, status_code = get_project(project_id=project_id, user=user)
+        project_to_delete, message, status_code = get_project(project_id=project_id, author=user)
         if project_to_delete is None:
             message = message
             status_code = status_code
@@ -99,3 +98,25 @@ class Projects(APIView):
             message = f"PROJECT '{project_id}' DELETED !"
             status_code = status.HTTP_200_OK
         return Response(message, status=status_code)
+
+
+class Contributors(APIView):
+    """API View for getting infos, adding or deleting contributor of a project """
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get(self, request, project_id):
+        """Get Contributors list of project by project_id"""
+        project, message, status_code = get_project(project_id=project_id)
+        if project is None:
+            message = message
+            status_code = status_code
+        else:
+            project_contributors = User.objects.filter(
+                id__in=[contributor.user_id.id for contributor in Contributor.objects.filter(project_id=project_id)])
+
+            contributors = self.serializer_class(project_contributors, many=True)
+            message = contributors.data
+            status_code = status.HTTP_200_OK
+
+        return JsonResponse(message, safe=False, status=status_code)
