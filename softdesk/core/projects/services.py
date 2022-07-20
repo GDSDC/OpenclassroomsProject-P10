@@ -1,5 +1,5 @@
 from typing import Tuple, Optional
-from core.users.models import User
+from core.users.models import User, Contributor
 from core.projects.models import Project
 from rest_framework import status
 
@@ -8,7 +8,9 @@ RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
              'not_project_author': {'message': 'ACCESS FORBIDDEN. PLEASE CONTACT PROJECT AUTHOR.',
                                     'status': status.HTTP_403_FORBIDDEN},
              'user_not_found': {'message': 'USER NOT FOUND. WRONG ID.',
-                                'status': status.HTTP_404_NOT_FOUND}
+                                'status': status.HTTP_404_NOT_FOUND},
+             'contributor_already_exists': {'message': 'USER IS ALREADY CONTRIBUTOR OF THIS PROJECT',
+                                            'status': status.HTTP_400_BAD_REQUEST}
              }
 
 
@@ -67,6 +69,32 @@ def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[i
                   RESPONSES['user_not_found']['status'])
     else:
         user = User.objects.get(id=user_id)
+        result = (user, None, None)
+
+    return result
+
+
+# ----------- CHECK IF USER ALREADY CONTRIBUTOR OF PROJECT ------------------
+
+def is_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+    """Function to know if a user is contributor of a project"""
+
+    # if not project_exists(project_id=project_id):
+    #     result = (None,
+    #               RESPONSES['project_not_found']['message'],
+    #               RESPONSES['project_not_found']['status'])
+    # elif not user_exists(user_id=user_id):
+    #     result = (None,
+    #               RESPONSES['user_not_found']['message'],
+    #               RESPONSES['user_not_found']['status'])
+    # else:
+    user = User.objects.get(id=user_id)
+    project = Project.objects.get(id=project_id)
+    if Contributor.objects.filter(user_id=user, project_id=project).exists():
+        result = (None,
+                  RESPONSES['contributor_already_exists']['message'],
+                  RESPONSES['contributor_already_exists']['status'])
+    else:
         result = (user, None, None)
 
     return result
