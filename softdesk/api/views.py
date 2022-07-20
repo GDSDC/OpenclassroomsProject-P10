@@ -10,7 +10,7 @@ from core.projects.models import Project
 import json
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view, permission_classes
-from core.projects.services import get_project
+from core.projects.services import get_project, get_user, is_contributor
 
 
 class SignUpAPIView(APIView):
@@ -120,3 +120,26 @@ class Contributors(APIView):
             status_code = status.HTTP_200_OK
 
         return JsonResponse(message, safe=False, status=status_code)
+
+    def post(self, request, project_id, user_id):
+        """Let the author of a project add a user as contributor by project_id and user_id"""
+        user = request.user
+        user_to_add, u_message, u_status_code = get_user(user_id=user_id)
+        project, p_message, p_status_code = get_project(project_id=project_id, author=user)
+        if project is None:
+            message = p_message
+            status_code = p_status_code
+        elif user_to_add is None:
+            message = u_message
+            status_code = u_status_code
+        else:
+            contributor, c_message, c_status_code = is_contributor(project_id=project_id, user_id=user_id)
+            if not contributor:
+                message = c_message
+                status_code = c_status_code
+            else:
+                Contributor.objects.create(user_id=contributor, project_id=project, role='C')
+                message = f"USER {contributor.email} ADDED TO CONTRIBUTORS OF PROJECT !"
+                status_code = status.HTTP_201_CREATED
+
+        return Response(message, status=status_code)
