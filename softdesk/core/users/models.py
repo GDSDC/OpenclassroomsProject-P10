@@ -78,3 +78,6 @@ class Contributor(models.Model):
     # Définition de la permission floue dans l'énoncé du projet.
     # Nous appliquons par définition ici READANDWRITE car tous les cas sont déjà couverts par le rôle
     role = models.CharField(max_length=1,choices=Role.choices, default=Role.CONTRIBUTOR)
+
+    class Meta:
+        unique_together = ('user_id', 'project_id',)
