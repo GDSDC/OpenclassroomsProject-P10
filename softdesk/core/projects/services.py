@@ -10,7 +10,9 @@ RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
              'user_not_found': {'message': 'USER NOT FOUND. WRONG ID.',
                                 'status': status.HTTP_404_NOT_FOUND},
              'contributor_already_exists': {'message': 'USER IS ALREADY CONTRIBUTOR OF THIS PROJECT',
-                                            'status': status.HTTP_400_BAD_REQUEST}
+                                            'status': status.HTTP_400_BAD_REQUEST},
+             'not_contributor': {'message': 'USER IS NOT CONTRIBUTOR OF THIS PROJECT',
+                                            'status': status.HTTP_404_NOT_FOUND}
              }
 
 
@@ -76,7 +78,7 @@ def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[i
 
 # ----------- CHECK IF USER ALREADY CONTRIBUTOR OF PROJECT ------------------
 
-def is_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+def is_not_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to know if a user is contributor of a project"""
 
     user = User.objects.get(id=user_id)
@@ -86,6 +88,8 @@ def is_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Op
                   RESPONSES['contributor_already_exists']['message'],
                   RESPONSES['contributor_already_exists']['status'])
     else:
-        result = (user, None, None)
+        result = (user,
+                  RESPONSES['not_contributor']['message'],
+                  RESPONSES['not_contributor']['status'])
 
     return result

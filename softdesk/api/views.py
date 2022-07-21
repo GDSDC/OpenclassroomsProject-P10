@@ -10,7 +10,7 @@ from core.projects.models import Project
 import json
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view, permission_classes
-from core.projects.services import get_project, get_user, is_contributor
+from core.projects.services import get_project, get_user, is_not_contributor
 
 
 class SignUpAPIView(APIView):
@@ -133,13 +133,39 @@ class Contributors(APIView):
             message = u_message
             status_code = u_status_code
         else:
-            contributor, c_message, c_status_code = is_contributor(project_id=project_id, user_id=user_id)
-            if not contributor:
+            not_contributor, c_message, c_status_code = is_not_contributor(project_id=project_id, user_id=user_id)
+            if not_contributor:
+                Contributor.objects.create(user_id=not_contributor, project_id=project, role='C')
+                message = f"USER {not_contributor.email} ADDED TO CONTRIBUTORS OF PROJECT !"
+                status_code = status.HTTP_201_CREATED
+            else:
+                message = c_message
+                status_code = c_status_code
+
+        return Response(message, status=status_code)
+
+    def delete(self, request, project_id, user_id):
+        """Let the author of a project delete a contributor by project_id and user_id"""
+        user = request.user
+        user_to_delete, u_message, u_status_code = get_user(user_id=user_id)
+        project, p_message, p_status_code = get_project(project_id=project_id, author=user)
+        if project is None:
+            message = p_message
+            status_code = p_status_code
+        elif user_to_delete is None:
+            message = u_message
+            status_code = u_status_code
+        else:
+            not_contributor, c_message, c_status_code = is_not_contributor(project_id=project_id, user_id=user_id)
+            if not_contributor:
                 message = c_message
                 status_code = c_status_code
             else:
-                Contributor.objects.create(user_id=contributor, project_id=project, role='C')
-                message = f"USER {contributor.email} ADDED TO CONTRIBUTORS OF PROJECT !"
-                status_code = status.HTTP_201_CREATED
+                # TODO : Gérer le cas ou l'author voudrait se retirer lui-même de la liste des contributors ?
+                contributor_to_remove = Contributor.objects.get(user_id=user_to_delete, project_id=project)
+                contributor_to_remove.delete()
+                message = f"USER {user_to_delete.email} REMOVED FROM CONTRIBUTORS OF PROJECT !"
+                status_code = status.HTTP_200_OK
+
 
         return Response(message, status=status_code)
