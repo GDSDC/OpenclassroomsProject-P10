@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from api.serializers import UserSignUpSerializer, ProjectSerializer, UserSerializer
+from api.serializers import UserSignUpSerializer, ProjectSerializer, UserSerializer, IssueSerializer
 from django.contrib.auth import authenticate, login
 from core.users.models import User, Contributor
 from core.projects.models import Project
+from core.issues.models import Issue
 import json
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view, permission_classes
@@ -169,3 +170,11 @@ class Contributors(APIView):
 
 
         return Response(message, status=status_code)
+
+class Issues(APIView):
+    """API View for getting infos, creating, updating or deleting an issue of a project."""
+    permission_classes = [IsAuthenticated]
+    serializer_class = IssueSerializer
+
+    # TODO : develop
+

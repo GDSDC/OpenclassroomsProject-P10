@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from core.users.models import User, Contributor
 from core.projects.models import Project
-from rest_framework.validators import UniqueValidator
+from core.issues.models import Issue
 from django.contrib.auth import authenticate
 
 
@@ -75,3 +75,13 @@ class ProjectSerializer(serializers.ModelSerializer):
         instance.type = validated_data.get('type', instance.type)
         instance.save()
         return instance
+
+class IssueSerializer(serializers.ModelSerializer):
+    """Serializer class for Issues"""
+
+    class Meta:
+        model = Issue
+        fields = ['title','desc','tag','priority','project_id','status','created_time']
+
+
+
