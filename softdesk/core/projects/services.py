@@ -79,15 +79,6 @@ def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[i
 def is_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to know if a user is contributor of a project"""
 
-    # if not project_exists(project_id=project_id):
-    #     result = (None,
-    #               RESPONSES['project_not_found']['message'],
-    #               RESPONSES['project_not_found']['status'])
-    # elif not user_exists(user_id=user_id):
-    #     result = (None,
-    #               RESPONSES['user_not_found']['message'],
-    #               RESPONSES['user_not_found']['status'])
-    # else:
     user = User.objects.get(id=user_id)
     project = Project.objects.get(id=project_id)
     if Contributor.objects.filter(user_id=user, project_id=project).exists():
