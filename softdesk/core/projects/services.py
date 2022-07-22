@@ -12,7 +12,7 @@ RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
              'contributor_already_exists': {'message': 'USER IS ALREADY CONTRIBUTOR OF THIS PROJECT',
                                             'status': status.HTTP_400_BAD_REQUEST},
              'not_contributor': {'message': 'USER IS NOT CONTRIBUTOR OF THIS PROJECT',
-                                            'status': status.HTTP_404_NOT_FOUND}
+                                 'status': status.HTTP_404_NOT_FOUND}
              }
 
 
@@ -34,9 +34,16 @@ def is_project_author(project_id: int, author: User) -> bool:
         return False
 
 
-def get_project(project_id: int, author: Optional[User] = None) \
+def is_project_contributor(project_id: int, contributor: User) -> bool:
+    """Function that check if the user is a contributor of the poject"""
+
+    project = Project.objects.get(id=project_id)
+    return Contributor.objects.filter(project_id=project, user_id=contributor).exists()
+
+
+def get_project(project_id: int, author: Optional[User] = None, contributor: Optional[User] = None) \
         -> Tuple[Optional[Project], Optional[str], Optional[int]]:
-    """Function to get project if it exists and if user is the author"""
+    """Function to get project if it exists and Optional[if user is the author or user is contributor]"""
 
     if not project_exists(project_id=project_id):
         result = (None,
@@ -50,6 +57,10 @@ def get_project(project_id: int, author: Optional[User] = None) \
             result = (None,
                       RESPONSES['not_project_author']['message'],
                       RESPONSES['not_project_author']['status'])
+        elif not is_project_contributor(project_id=project_id, contributor=contributor) and contributor is not None:
+            result = (None,
+                      RESPONSES['not_contributor']['message'],
+                      RESPONSES['not_contributor']['status'])
 
     return result
 
@@ -78,12 +89,12 @@ def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[i
 
 # ----------- CHECK IF USER ALREADY CONTRIBUTOR OF PROJECT ------------------
 
-def is_not_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+def not_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to know if a user is contributor of a project"""
 
     user = User.objects.get(id=user_id)
     project = Project.objects.get(id=project_id)
-    if Contributor.objects.filter(user_id=user, project_id=project).exists():
+    if is_project_contributor(project_id=project_id, contributor=user):
         result = (None,
                   RESPONSES['contributor_already_exists']['message'],
                   RESPONSES['contributor_already_exists']['status'])
