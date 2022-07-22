@@ -1,5 +1,5 @@
 from django.urls import path
-from api.views import SignUpAPIView, TestAuth, GeneralProjects, Projects, Contributors
+from api.views import SignUpAPIView, TestAuth, GeneralProjects, Projects, Contributors, Issues
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -12,6 +12,7 @@ urlpatterns = [
     path('projects/<int:project_id>/', Projects.as_view()),
     path('projects/<int:project_id>/users/', Contributors.as_view()),
     path('projects/<int:project_id>/users/<int:user_id>', Contributors.as_view()),
+    path('projects/<int:project_id>/issues/', Issues.as_view()),
 
     # test
     path('me/', TestAuth.as_view(), name='me'),

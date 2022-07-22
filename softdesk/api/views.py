@@ -11,7 +11,7 @@ from core.issues.models import Issue
 import json
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view, permission_classes
-from core.projects.services import get_project, get_user, is_not_contributor
+from core.projects.services import get_project, get_user, not_contributor
 
 
 class SignUpAPIView(APIView):
@@ -108,6 +108,7 @@ class Contributors(APIView):
 
     def get(self, request, project_id):
         """Get Contributors list of project by project_id"""
+        user = request.user
         project, message, status_code = get_project(project_id=project_id)
         if project is None:
             message = message
@@ -134,10 +135,10 @@ class Contributors(APIView):
             message = u_message
             status_code = u_status_code
         else:
-            not_contributor, c_message, c_status_code = is_not_contributor(project_id=project_id, user_id=user_id)
-            if not_contributor:
-                Contributor.objects.create(user_id=not_contributor, project_id=project, role='C')
-                message = f"USER {not_contributor.email} ADDED TO CONTRIBUTORS OF PROJECT !"
+            c_user, c_message, c_status_code = not_contributor(project_id=project_id, user_id=user_id)
+            if c_user:
+                Contributor.objects.create(user_id=c_user, project_id=project, role='C')
+                message = f"USER {c_user.email} ADDED TO CONTRIBUTORS OF PROJECT !"
                 status_code = status.HTTP_201_CREATED
             else:
                 message = c_message
@@ -157,8 +158,8 @@ class Contributors(APIView):
             message = u_message
             status_code = u_status_code
         else:
-            not_contributor, c_message, c_status_code = is_not_contributor(project_id=project_id, user_id=user_id)
-            if not_contributor:
+            c_user, c_message, c_status_code = not_contributor(project_id=project_id, user_id=user_id)
+            if c_user:
                 message = c_message
                 status_code = c_status_code
             else:
@@ -168,13 +169,26 @@ class Contributors(APIView):
                 message = f"USER {user_to_delete.email} REMOVED FROM CONTRIBUTORS OF PROJECT !"
                 status_code = status.HTTP_200_OK
 
-
         return Response(message, status=status_code)
+
 
 class Issues(APIView):
     """API View for getting infos, creating, updating or deleting an issue of a project."""
     permission_classes = [IsAuthenticated]
     serializer_class = IssueSerializer
 
-    # TODO : develop
+    def get(self, request, project_id):
+        """Get Issues list of project by project_id"""
+        user = request.user
+        project, p_message, p_status_code = get_project(project_id=project_id, contributor=user)
+        if project is None:
+            message = p_message
+            status_code = p_status_code
+        else:
+            project_issues = Issue.objects.filter(project_id=project)
+            issues = self.serializer_class(project_issues, many=True)
+            message = issues.data
+            status_code = status.HTTP_200_OK
+
+        return JsonResponse(message,safe=False, status=status_code)
 
