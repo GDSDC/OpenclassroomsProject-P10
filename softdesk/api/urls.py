@@ -1,5 +1,9 @@
 from django.urls import path
-from api.views import SignUpAPIView, TestAuth, GeneralProjects, Projects, Contributors, Issues
+from api.views.user_views import SignUpAPIView
+from api.views.test_views import TestAuth
+from api.views.project_views import GeneralProjects, Projects
+from api.views.contributor_views import Contributors
+from api.views.issue_views import Issues
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
