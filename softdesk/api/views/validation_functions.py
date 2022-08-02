@@ -1,6 +1,6 @@
 from typing import Tuple, Optional
 from rest_framework import status
-from core.users.models import User, Contributor
+from core.users.models import ContributorRole, User, Contributor
 from core.projects.models import Project
 from core.projects import services as project_service
 from core.projects.services import project_exists, is_contributor
@@ -37,32 +37,22 @@ def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[i
 
 # ----------- GETTING PROJECT BY ID ------------------
 
-def get_project(project_id: int, author: Optional[User] = None, contributor: Optional[User] = None) \
+def get_project_and_ensure_access(project_id: int, author: Optional[User] = None, contributor: Optional[User] = None) \
         -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to get project if it exists and Optional[if user is the author or user is contributor]"""
+    user = author or contributor
+    if user is None:
+        raise ValueError('You must pass at least one user')
 
-    if not project_exists(project_id=project_id):
-        result = (None,
-                  RESPONSES['project_not_found']['message'],
-                  RESPONSES['project_not_found']['status'])
-    else:
-        project = Project.objects.get(id=project_id)
+    project = project_service.get_project(project_id)
+    if project is None:
+        return None, RESPONSES['project_not_found']['message'], status.HTTP_404_NOT_FOUND
 
-        result = (project, None, None)
+    role = ContributorRole.AUTHOR if author is not None else None
+    if not project_service.is_contributor(project, contributor=user, with_role=role):
+        return project, RESPONSES['not_contributor']['message'], status.HTTP_403_FORBIDDEN
 
-        if author is not None:
-            if not project.is_author(author):
-                result = (None,
-                          RESPONSES['not_project_author']['message'],
-                          RESPONSES['not_project_author']['status'])
-
-        if contributor is not None:
-            if not is_contributor(project_id=project_id, contributor=contributor):
-                result = (None,
-                          RESPONSES['not_contributor']['message'],
-                          RESPONSES['not_contributor']['status'])
-
-    return result
+    return project, None, None
 
 
 # ----------- CHECK IF USER ALREADY CONTRIBUTOR OF PROJECT ------------------

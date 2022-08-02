@@ -5,8 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api.serializers import UserSerializer
 from core.users.models import User, Contributor
-from core.projects import services as project_service
-from api.views.validation_functions import get_project, not_contributor, get_user, RESPONSES
+from api.views.validation_functions import get_project_and_ensure_access, not_contributor, get_user
 
 
 class Contributors(APIView):
@@ -17,13 +16,10 @@ class Contributors(APIView):
     def get(self, request, project_id):
         """Get Contributors list of project by project_id"""
         user = request.user
-
-        project, message, status_code = get_project(project_id=project_id)
-        if project is None:
-            return JsonResponse(RESPONSES['project_not_found']['message'], safe=False, status=status.HTTP_404_NOT_FOUND)
-
-        if not project_service.is_contributor(project, user):
-            return JsonResponse(RESPONSES['not_contributor']['message'], safe=False, status=status.HTTP_403_FORBIDDEN)
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
+        if error_code is not None:
+            # error case
+            return JsonResponse(error_message, safe=False, status=error_code)
 
         project_contributors = User.objects.filter(
             id__in=[contributor.user_id.id for contributor in Contributor.objects.filter(project_id=project_id)]
