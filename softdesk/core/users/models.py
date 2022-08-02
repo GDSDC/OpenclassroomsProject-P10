@@ -62,6 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Contributor(models.Model):
+    # TODO move in its own file to avoid circular dependency Project -> User -> Contributor -> Project
     """Contributor class - through class between User and Project"""
 
     class Permission(models.TextChoices):

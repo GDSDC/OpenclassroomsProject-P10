@@ -48,14 +48,17 @@ def get_project(project_id: int, author: Optional[User] = None, contributor: Opt
         project = Project.objects.get(id=project_id)
         result = (project, None, None)
 
-        if not is_project_author(project_id=project_id, author=author) and author is not None:
-            result = (None,
-                      RESPONSES['not_project_author']['message'],
-                      RESPONSES['not_project_author']['status'])
-        elif not is_project_contributor(project_id=project_id, contributor=contributor) and contributor is not None:
-            result = (None,
-                      RESPONSES['not_contributor']['message'],
-                      RESPONSES['not_contributor']['status'])
+        if author is not None:
+            if not project.is_author(author):
+                result = (None,
+                          RESPONSES['not_project_author']['message'],
+                          RESPONSES['not_project_author']['status'])
+
+        if contributor is not None:
+            if not is_project_contributor(project_id=project_id, contributor=contributor):
+                result = (None,
+                          RESPONSES['not_contributor']['message'],
+                          RESPONSES['not_contributor']['status'])
 
     return result
 
