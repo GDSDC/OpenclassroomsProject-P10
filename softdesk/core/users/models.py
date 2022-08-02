@@ -72,12 +72,12 @@ class Contributor(models.Model):
         AUTHOR = 'A', _('Author')
         CONTRIBUTOR = 'C', _('Contributor')
 
-    user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-    project_id = models.ForeignKey(to=Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
     permission = models.CharField(max_length=2,choices=Permission.choices, default=Permission.READANDWRITE)
     # Définition de la permission floue dans l'énoncé du projet.
     # Nous appliquons par définition ici READANDWRITE car tous les cas sont déjà couverts par le rôle
     role = models.CharField(max_length=1,choices=Role.choices, default=Role.CONTRIBUTOR)
 
     class Meta:
-        unique_together = ('user_id', 'project_id',)
+        unique_together = ('user', 'project',)

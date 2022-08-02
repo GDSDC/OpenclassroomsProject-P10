@@ -26,10 +26,10 @@ class Issue(models.Model):
     desc = models.CharField(max_length=512, blank=True)
     tag = models.CharField(max_length=1, choices=Tag.choices)
     priority = models.CharField(max_length=1, choices=Priority.choices)
-    project_id = models.ForeignKey(to=Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.TODO)
-    author_user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,
+    author_user = models.ForeignKey(to=settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,
                                        related_name='author')
-    assignee_user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
+    assignee_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
                                          related_name='assignee')
     created_time = models.DateTimeField(auto_now_add=True)
