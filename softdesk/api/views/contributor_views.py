@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api.serializers import UserSerializer
 from core.users.models import User, Contributor
-from api.views.validation_functions import get_project, not_contributor, get_user
+from core.projects import services as project_service
+from api.views.validation_functions import get_project, not_contributor, get_user, RESPONSES
 
 
 class Contributors(APIView):
@@ -16,19 +17,22 @@ class Contributors(APIView):
     def get(self, request, project_id):
         """Get Contributors list of project by project_id"""
         user = request.user
+
         project, message, status_code = get_project(project_id=project_id)
         if project is None:
-            message = message
-            status_code = status_code
-        else:
-            project_contributors = User.objects.filter(
-                id__in=[contributor.user_id.id for contributor in Contributor.objects.filter(project_id=project_id)])
+            return JsonResponse(RESPONSES['project_not_found']['message'], safe=False, status=status.HTTP_404_NOT_FOUND)
 
-            contributors = self.serializer_class(project_contributors, many=True)
-            message = contributors.data
-            status_code = status.HTTP_200_OK
+        if not project_service.is_contributor(project, user):
+            return JsonResponse(RESPONSES['not_contributor']['message'], safe=False, status=status.HTTP_403_FORBIDDEN)
 
-        return JsonResponse(message, safe=False, status=status_code)
+        project_contributors = User.objects.filter(
+            id__in=[contributor.user_id.id for contributor in Contributor.objects.filter(project_id=project_id)]
+        )
+
+        contributors = self.serializer_class(project_contributors, many=True)
+        message = contributors.data
+
+        return JsonResponse(message, safe=False, status=status.HTTP_200_OK)
 
     def post(self, request, project_id, user_id):
         """Let the author of a project add a user as contributor by project_id and user_id"""

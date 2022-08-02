@@ -7,7 +7,6 @@ from django.contrib.auth.models import (
 from core.projects.models import Project
 
 
-
 class UserManager(BaseUserManager):
 
     def _create_user(self, email, password, **extra_fields):
@@ -61,24 +60,27 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self
 
 
+class ContributorPermission(models.TextChoices):
+    READONLY = 'R', _('ReadOnly')
+    READANDWRITE = 'RW', _('ReadAndWrite')
+
+
+class ContributorRole(models.TextChoices):
+    AUTHOR = 'A', _('Author')
+    CONTRIBUTOR = 'C', _('Contributor')
+
+
 class Contributor(models.Model):
     # TODO move in its own file to avoid circular dependency Project -> User -> Contributor -> Project
     """Contributor class - through class between User and Project"""
 
-    class Permission(models.TextChoices):
-        READONLY = 'R', _('ReadOnly')
-        READANDWRITE = 'RW', _('ReadAndWrite')
-
-    class Role(models.TextChoices):
-        AUTHOR = 'A', _('Author')
-        CONTRIBUTOR = 'C', _('Contributor')
-
     user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     project_id = models.ForeignKey(to=Project, on_delete=models.CASCADE)
-    permission = models.CharField(max_length=2,choices=Permission.choices, default=Permission.READANDWRITE)
+    permission = models.CharField(max_length=2, choices=ContributorPermission.choices,
+                                  default=ContributorPermission.READANDWRITE)
     # Définition de la permission floue dans l'énoncé du projet.
     # Nous appliquons par définition ici READANDWRITE car tous les cas sont déjà couverts par le rôle
-    role = models.CharField(max_length=1,choices=Role.choices, default=Role.CONTRIBUTOR)
+    role = models.CharField(max_length=1, choices=ContributorRole.choices, default=ContributorRole.CONTRIBUTOR)
 
     class Meta:
         unique_together = ('user_id', 'project_id',)
