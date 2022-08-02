@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api.serializers import IssueSerializer
 from core.issues.models import Issue
-from api.views.validation_functions import get_project
+from api.views.validation_functions import get_project_and_ensure_access
 
 class Issues(APIView):
     """API View for getting infos, creating, updating or deleting an issue of a project."""

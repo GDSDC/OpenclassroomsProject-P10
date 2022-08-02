@@ -10,13 +10,13 @@ class Tag(models.TextChoices):
     IMPROVEMENT = 'I', _('Improvement')
 
 
-class Priority(models.TextChoices):
+class IssuePriority(models.TextChoices):
     LOW = 'L', _('Low')
     MEDIUM = 'M', _('Medium')
     HIGH = 'H', _('High')
 
 
-class Status(models.TextChoices):
+class IssueStatus(models.TextChoices):
     TODO = 'TD', _('To Do')
     INPROGRESS = 'P', _('In Progress')
     DONE = 'D', _('Done')
@@ -28,9 +28,9 @@ class Issue(models.Model):
     title = models.CharField(max_length=60)
     desc = models.CharField(max_length=512, blank=True)
     tag = models.CharField(max_length=1, choices=Tag.choices)
-    priority = models.CharField(max_length=1, choices=Priority.choices)
+    priority = models.CharField(max_length=1, choices=IssuePriority.choices)
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
-    status = models.CharField(max_length=2, choices=Status.choices, default=Status.TODO)
+    status = models.CharField(max_length=2, choices=IssueStatus.choices, default=IssueStatus.TODO)
     author_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
                                     related_name='author')
     assignee_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,

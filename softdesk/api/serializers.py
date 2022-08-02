@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from core.users.models import User, Contributor
+from core.users.models import User
+from core.contributors.models import Contributor
 from core.projects.models import Project
 from core.issues.models import Issue
 from django.contrib.auth import authenticate

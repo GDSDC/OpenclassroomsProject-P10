@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api.serializers import ProjectSerializer
 from core.projects.models import Project
-from api.views.validation_functions import get_project
+from api.views.validation_functions import get_project_and_ensure_access
 
 
 class GeneralProjects(APIView):
