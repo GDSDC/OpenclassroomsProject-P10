@@ -59,12 +59,12 @@ class ProjectSerializer(serializers.ModelSerializer):
             title=validated_data.get('title'),
             description=validated_data.get('description', ''),
             type=validated_data.get('type', ''),
-            author_user_id=self.context.get('request').user
+            author_user=self.context.get('request').user
         )
         project.save()
         # Creating initial Contributor
-        first_contributor = Contributor.objects.create(user_id=project.author_user_id,
-                                                       project_id=project,
+        first_contributor = Contributor.objects.create(user=project.author_user,
+                                                       project=project,
                                                        permission='RW',
                                                        role='A')
         first_contributor.save()
@@ -82,7 +82,7 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issue
-        fields = ['title','desc','tag','priority','project_id','status','created_time']
+        fields = ['title','desc','tag','priority','project','status','created_time']
 
 
 
