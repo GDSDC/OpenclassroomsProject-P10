@@ -32,4 +32,10 @@ def get_project(project_id: int) -> Optional[Project]:
 
 def is_contributor(project: Project, contributor: User, with_role: Optional[ContributorRole] = None) -> bool:
     """Function that check if the user is a contributor of the poject"""
-    return Contributor.objects.filter(project_id=project, user_id=contributor, role=with_role).exists()
+    # if author
+    if with_role:
+        return Contributor.objects.filter(project=project, user=contributor, role=with_role).exists()
+    # if not author
+    else:
+        return Contributor.objects.filter(project=project, user=contributor).exists()
+
