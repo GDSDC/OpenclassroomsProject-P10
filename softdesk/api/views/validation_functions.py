@@ -1,10 +1,10 @@
 from typing import Tuple, Optional
 from rest_framework import status
-from core.users.models import User, Contributor
+from core.contributors.models import ContributorRole, Contributor
+from core.users.models import User
 from core.projects.models import Project
-from core.projects.services import project_exists, is_project_author, is_project_contributor
+from core.projects import services as project_service
 from core.users.services import user_exists
-
 
 RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
                                    'status': status.HTTP_404_NOT_FOUND},
@@ -18,61 +18,46 @@ RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
                                  'status': status.HTTP_404_NOT_FOUND}
              }
 
+
 # ----------- GETTING USER BY ID ------------------
 
 def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to get a user if it exists"""
 
     if not user_exists(user_id=user_id):
-        result = (None,
-                  RESPONSES['user_not_found']['message'],
-                  RESPONSES['user_not_found']['status'])
-    else:
-        user = User.objects.get(id=user_id)
-        result = (user, None, None)
+        return None, RESPONSES['user_not_found']['message'], RESPONSES['user_not_found']['status']
 
-    return result
+    user = User.objects.get(id=user_id)
+    return user, None, None
 
 
 # ----------- GETTING PROJECT BY ID ------------------
 
-def get_project(project_id: int, author: Optional[User] = None, contributor: Optional[User] = None) \
+def get_project_and_ensure_access(project_id: int, author: Optional[User] = None, contributor: Optional[User] = None) \
         -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to get project if it exists and Optional[if user is the author or user is contributor]"""
+    user = author or contributor
+    if user is None:
+        raise ValueError('You must pass at least one user')
 
-    if not project_exists(project_id=project_id):
-        result = (None,
-                  RESPONSES['project_not_found']['message'],
-                  RESPONSES['project_not_found']['status'])
-    else:
-        project = Project.objects.get(id=project_id)
-        result = (project, None, None)
+    project = project_service.get_project(project_id)
+    if project is None:
+        return None, RESPONSES['project_not_found']['message'], status.HTTP_404_NOT_FOUND
 
-        if not is_project_author(project_id=project_id, author=author) and author is not None:
-            result = (None,
-                      RESPONSES['not_project_author']['message'],
-                      RESPONSES['not_project_author']['status'])
-        elif not is_project_contributor(project_id=project_id, contributor=contributor) and contributor is not None:
-            result = (None,
-                      RESPONSES['not_contributor']['message'],
-                      RESPONSES['not_contributor']['status'])
+    role = ContributorRole.AUTHOR if author is not None else None
+    if not project_service.is_contributor(project, contributor=user, with_role=role):
+        return project, RESPONSES['not_contributor']['message'], status.HTTP_403_FORBIDDEN
 
-    return result
+    return project, None, None
+
 
 # ----------- CHECK IF USER ALREADY CONTRIBUTOR OF PROJECT ------------------
 
-def not_contributor(project_id: int, user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+def not_contributor(project: Project, user: User) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
     """Function to know if a user is contributor of a project"""
 
-    user = User.objects.get(id=user_id)
-    project = Project.objects.get(id=project_id)
-    if is_project_contributor(project_id=project_id, contributor=user):
-        result = (None,
-                  RESPONSES['contributor_already_exists']['message'],
-                  RESPONSES['contributor_already_exists']['status'])
-    else:
-        result = (user,
-                  RESPONSES['not_contributor']['message'],
-                  RESPONSES['not_contributor']['status'])
+    if project_service.is_contributor(project, contributor=user):
+        return None, RESPONSES['contributor_already_exists']['message'], status.HTTP_400_BAD_REQUEST
 
-    return result
+    return user, RESPONSES['not_contributor']['message'], status.HTTP_404_NOT_FOUND
+
