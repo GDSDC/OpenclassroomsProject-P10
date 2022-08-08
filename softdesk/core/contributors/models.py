@@ -25,3 +25,7 @@ class Contributor(models.Model):
 
     class Meta:
         unique_together = ('user', 'project',)
+
+    @property
+    def role_name(self):
+        return ContributorRole(self.role).name

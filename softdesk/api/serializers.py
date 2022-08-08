@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.users.models import User
-from core.contributors.models import Contributor
+from core.contributors.models import Contributor, ContributorRole
 from core.projects.models import Project
 from core.issues.models import Issue
 from django.contrib.auth import authenticate
@@ -86,3 +86,12 @@ class IssueSerializer(serializers.ModelSerializer):
 
 
 
+class ContributorSerializer(serializers.ModelSerializer):
+    """Serializer class for contributors"""
+
+    user_email = serializers.CharField(read_only=True, source='user.email')
+
+
+    class Meta:
+        model = Contributor
+        fields = ['user_email','role_name']

@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from api.serializers import UserSerializer
+from api.serializers import ContributorSerializer
 from core.contributors.models import Contributor
 from core.users.models import User
 from api.views.validation_functions import get_project_and_ensure_access, not_contributor, get_user
@@ -11,7 +11,7 @@ from api.views.validation_functions import get_project_and_ensure_access, not_co
 class Contributors(APIView):
     """API View for getting infos, adding or deleting contributor of a project """
     permission_classes = [IsAuthenticated]
-    serializer_class = UserSerializer
+    serializer_class = ContributorSerializer
 
     def get(self, request, project_id):
         """Get Contributors list of project by project_id"""
@@ -24,8 +24,8 @@ class Contributors(APIView):
             return JsonResponse(error_message, safe=False, status=error_code)
 
         # get contributors
-        project_contributors = User.objects.filter(
-            id__in=[contributor.user_id for contributor in Contributor.objects.filter(project_id=project_id)])
+        project_contributors = Contributor.objects.filter(
+            id__in=[contributor.id for contributor in Contributor.objects.filter(project_id=project_id)])
         contributors = self.serializer_class(project_contributors, many=True)
         message = contributors.data
         return JsonResponse(message, safe=False, status=status.HTTP_200_OK)
