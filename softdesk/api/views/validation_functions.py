@@ -21,7 +21,7 @@ RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
 
 # ----------- GETTING USER BY ID ------------------
 
-def get_user(user_id: int) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+def get_user(user_id: int) -> Tuple[Optional[User], Optional[str], Optional[int]]:
     """Function to get a user if it exists"""
 
     if not user_exists(user_id=user_id):
@@ -53,7 +53,7 @@ def get_project_and_ensure_access(project_id: int, author: Optional[User] = None
 
 # ----------- CHECK IF USER ALREADY CONTRIBUTOR OF PROJECT ------------------
 
-def not_contributor(project: Project, user: User) -> Tuple[Optional[Project], Optional[str], Optional[int]]:
+def not_contributor(project: Project, user: User) -> Tuple[Optional[User], Optional[str], Optional[int]]:
     """Function to know if a user is contributor of a project"""
 
     if project_service.is_contributor(project, contributor=user):
