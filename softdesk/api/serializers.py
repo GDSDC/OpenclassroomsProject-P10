@@ -77,21 +77,34 @@ class ProjectSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class IssueSerializer(serializers.ModelSerializer):
     """Serializer class for Issues"""
 
     class Meta:
         model = Issue
-        fields = ['title','desc','tag','priority','project','status','created_time']
+        fields = ['title', 'desc', 'tag', 'priority', 'status', 'created_time']
 
-
+    def create(self, validated_data):
+        # Creating Issue
+        issue = Issue.objects.create(
+            title=validated_data.get('title'),
+            desc=validated_data.get('desc', ''),
+            tag=validated_data.get('tag'),
+            priority=validated_data.get('priority'),
+            project=Project.objects.get(id=self.context.get('project_id')),
+            status=validated_data.get('status'),
+            author_user=self.context.get('request').user,
+            assignee_user=User.objects.get(id=validated_data.get('assignee_user')),
+        )
+        issue.save()
+        return issue
 
 class ContributorSerializer(serializers.ModelSerializer):
     """Serializer class for contributors"""
 
     user_email = serializers.CharField(read_only=True, source='user.email')
 
-
     class Meta:
         model = Contributor
-        fields = ['user_email','role_name']
+        fields = ['user_email', 'role_name']
