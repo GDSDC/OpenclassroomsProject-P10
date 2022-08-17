@@ -1,7 +1,7 @@
 from typing import Optional
 from django.core.exceptions import ObjectDoesNotExist
 from core.projects.models import Project
-from core.contributors.models import ContributorRole, Contributor
+from core.contributors.models import Contributor
 from core.users.models import User
 
 
@@ -30,7 +30,7 @@ def get_project(project_id: int) -> Optional[Project]:
         return None
 
 
-def is_contributor(project: Project, contributor: User, with_role: Optional[ContributorRole] = None) -> bool:
+def is_contributor(project: Project, contributor: User, with_role: Optional = None) -> bool:
     """Function that check if the user is a contributor of the poject"""
     # if author
     if with_role:

@@ -1,6 +1,6 @@
 from typing import Tuple, Optional
 from rest_framework import status
-from core.contributors.models import ContributorRole, Contributor
+from core.contributors.models import Contributor
 from core.users.models import User
 from core.projects.models import Project
 from core.projects import services as project_service
@@ -44,7 +44,7 @@ def get_project_and_ensure_access(project_id: int, author: Optional[User] = None
     if project is None:
         return None, RESPONSES['project_not_found']['message'], status.HTTP_404_NOT_FOUND
 
-    role = ContributorRole.AUTHOR if author is not None else None
+    role = Contributor.Role.AUTHOR if author is not None else None
     if not project_service.is_contributor(project, contributor=user, with_role=role):
         return project, RESPONSES['not_contributor']['message'], status.HTTP_403_FORBIDDEN
 
