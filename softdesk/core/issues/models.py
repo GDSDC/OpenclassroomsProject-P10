@@ -1,36 +1,32 @@
 from django.db import models
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
 from core.projects.models import Project
-
-
-class Tag(models.TextChoices):
-    BUG = 'B', _('Bug')
-    TASK = 'T', _('Task')
-    IMPROVEMENT = 'I', _('Improvement')
-
-
-class IssuePriority(models.TextChoices):
-    LOW = 'L', _('Low')
-    MEDIUM = 'M', _('Medium')
-    HIGH = 'H', _('High')
-
-
-class IssueStatus(models.TextChoices):
-    TODO = 'TD', _('To Do')
-    INPROGRESS = 'P', _('In Progress')
-    DONE = 'D', _('Done')
 
 
 class Issue(models.Model):
     """Issues class"""
 
+    class Tag(models.TextChoices):
+        BUG = 'BUG', 'Bug'
+        TASK = 'TASK', 'Task'
+        IMPROVEMENT = 'IMPROVEMENT', 'Improvement'
+
+    class Priority(models.TextChoices):
+        LOW = 'LOW', 'Low'
+        MEDIUM = 'MEDIUM', 'Medium'
+        HIGH = 'HIGH', 'High'
+
+    class Status(models.TextChoices):
+        TODO = 'TODO', 'To Do'
+        INPROGRESS = 'INPROGRESS', 'In Progress'
+        DONE = 'DONE', 'Done'
+
     title = models.CharField(max_length=60)
     desc = models.CharField(max_length=512, blank=True)
-    tag = models.CharField(max_length=1, choices=Tag.choices)
-    priority = models.CharField(max_length=1, choices=IssuePriority.choices)
+    tag = models.CharField(max_length=12, choices=Tag.choices)
+    priority = models.CharField(max_length=6, choices=Priority.choices)
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
-    status = models.CharField(max_length=2, choices=IssueStatus.choices, default=IssueStatus.TODO)
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.TODO)
     author_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
                                     related_name='author')
     assignee_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
