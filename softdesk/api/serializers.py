@@ -88,7 +88,7 @@ class IssueSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs["assignee_user"] not in [contributor.user for contributor in
                                           Contributor.objects.filter(project_id=self.context.get('project_id'))]:
-            raise serializers.ValidationError({"assignee_user": "assagnee_user not contributor of project."})
+            raise serializers.ValidationError({"assignee_user": "assignee_user not contributor of project."})
         return attrs
 
     def create(self, validated_data):
