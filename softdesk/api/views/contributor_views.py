@@ -49,7 +49,7 @@ class Contributors(APIView):
         # create contributor
         contributor_to_create, error_message, error_code = not_contributor(project=project, user=user_to_add)
         if contributor_to_create:
-            Contributor.objects.create(user=contributor_to_create, project=project, role='C')
+            Contributor.objects.create(user=contributor_to_create, project=project, role='CONTRIBUTOR')
             message = f"USER {contributor_to_create.email} ADDED TO CONTRIBUTORS OF PROJECT !"
             status_code = status.HTTP_201_CREATED
         else:

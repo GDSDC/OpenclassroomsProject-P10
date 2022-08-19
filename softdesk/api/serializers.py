@@ -66,7 +66,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         first_contributor = Contributor.objects.create(user=project.author_user,
                                                        project=project,
                                                        permission='RW',
-                                                       role='A')
+                                                       role='AUTHOR')
         first_contributor.save()
         return project
 
