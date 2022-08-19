@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'core.users',
     'core.projects',
     'core.issues',
-    'core.contributors'
+    'core.contributors',
+    'core.comments',
 ]
 
 MIDDLEWARE = [
