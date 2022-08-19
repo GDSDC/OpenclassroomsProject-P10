@@ -4,8 +4,9 @@ from core.contributors.models import Contributor
 from core.users.models import User
 from core.projects.models import Project
 from core.issues.models import Issue
-from core.projects import services as project_service
+from core.contributors import services as contributor_service
 from core.issues import services as issues_service
+from core.projects import services as project_service
 from core.users.services import user_exists
 
 RESPONSES = {'project_not_found': {'message': 'PROJECT NOT FOUND. WRONG ID.',
@@ -51,21 +52,10 @@ def get_project_and_ensure_access(project_id: int, author: Optional[User] = None
         return None, RESPONSES['project_not_found']['message'], status.HTTP_404_NOT_FOUND
 
     role = Contributor.Role.AUTHOR if author is not None else None
-    if not project_service.is_contributor(project, contributor=user, with_role=role):
+    if not contributor_service.is_contributor(project, contributor=user, with_role=role):
         return project, RESPONSES['not_contributor']['message'], status.HTTP_403_FORBIDDEN
 
     return project, None, None
-
-
-# ----------- CHECK IF USER ALREADY CONTRIBUTOR OF PROJECT ------------------
-
-def not_contributor(project: Project, user: User) -> Tuple[Optional[User], Optional[str], Optional[int]]:
-    """Function to know if a user is contributor of a project"""
-
-    if project_service.is_contributor(project, contributor=user):
-        return None, RESPONSES['contributor_already_exists']['message'], status.HTTP_400_BAD_REQUEST
-
-    return user, RESPONSES['not_contributor']['message'], status.HTTP_404_NOT_FOUND
 
 
 # ----------- GETTING ISSUE BY ID ------------------

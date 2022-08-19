@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from api.serializers import ContributorSerializer
 from core.contributors.models import Contributor
 from core.users.models import User
-from api.views.validation_functions import get_project_and_ensure_access, not_contributor, get_user
+from core.contributors import services as contributor_service
+from api.views.validation_functions import get_project_and_ensure_access, get_user
 
 
 class Contributors(APIView):
@@ -42,19 +43,19 @@ class Contributors(APIView):
 
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
 
-        # error case
+        # project error case
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
         # create contributor
-        contributor_to_create, error_message, error_code = not_contributor(project=project, user=user_to_add)
-        if contributor_to_create:
-            Contributor.objects.create(user=contributor_to_create, project=project, role='CONTRIBUTOR')
-            message = f"USER {contributor_to_create.email} ADDED TO CONTRIBUTORS OF PROJECT !"
+        is_contributor = contributor_service.is_contributor(project=project, contributor=user_to_add)
+        if not is_contributor:
+            Contributor.objects.create(user=user_to_add, project=project, role='CONTRIBUTOR')
+            message = f"USER {user_to_add.email} ADDED TO CONTRIBUTORS OF PROJECT !"
             status_code = status.HTTP_201_CREATED
         else:
-            message = error_message
-            status_code = error_code
+            message = f"USER {user_to_add.email} WAS ALREADY A CONTRIBUTOR !"
+            status_code = status.HTTP_200_OK
         return JsonResponse(message, safe=False, status=status_code)
 
     def delete(self, request, project_id, user_id):
@@ -69,18 +70,16 @@ class Contributors(APIView):
 
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
 
-        # error case
+        # project error case
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
         # delete contributor
-        contributor_to_delete, error_message, error_code = not_contributor(project=project, user=user_to_delete)
-        if contributor_to_delete:
-            message = error_message
-            status_code = error_code
-        else:
-            # TODO : Gérer le cas ou l'author voudrait se retirer lui-même de la liste des contributors ?
-            Contributor.objects.get(user=user_to_delete, project=project).delete()
+        # TODO : Gérer le cas ou l'author voudrait se retirer lui-même de la liste des contributors ?
+        deleted_count, _ = Contributor.objects.filter(user=user_to_delete, project=project).delete()
+        status_code = status.HTTP_200_OK
+        if deleted_count == 1:
             message = f"USER {user_to_delete.email} REMOVED FROM CONTRIBUTORS OF PROJECT !"
-            status_code = status.HTTP_200_OK
+        else:
+            message = f"USER {user_to_delete.email} IS NOT CONTRIBUTOR OF PROJECT !"
         return JsonResponse(message, safe=False, status=status_code)

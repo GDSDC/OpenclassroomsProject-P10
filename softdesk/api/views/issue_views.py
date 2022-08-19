@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api.serializers import IssueSerializer
 from core.issues.models import Issue
-from api.views.validation_functions import get_project_and_ensure_access, not_contributor, get_issue_and_ensure_access
+from api.views.validation_functions import get_project_and_ensure_access, get_issue_and_ensure_access
 
 
 class Issues(APIView):
@@ -49,7 +49,7 @@ class Issues(APIView):
 
         user = request.user
         issue_updated_data = request.data
-        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
+        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
 
         # project error case
         if error_message:
