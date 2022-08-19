@@ -21,7 +21,7 @@ class Issue(models.Model):
         INPROGRESS = 'INPROGRESS', 'In Progress'
         DONE = 'DONE', 'Done'
 
-    title = models.CharField(max_length=60)
+    title = models.CharField(max_length=60, unique=True)
     desc = models.CharField(max_length=512, blank=True)
     tag = models.CharField(max_length=12, choices=Tag.choices)
     priority = models.CharField(max_length=6, choices=Priority.choices)

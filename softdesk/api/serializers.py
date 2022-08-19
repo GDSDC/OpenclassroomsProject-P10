@@ -83,7 +83,7 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issue
-        fields = ['title', 'desc', 'tag', 'priority', 'status', 'created_time']
+        fields = ['title', 'desc', 'tag', 'priority', 'status', 'assignee_user']
 
     def create(self, validated_data):
         # Creating Issue
@@ -95,7 +95,7 @@ class IssueSerializer(serializers.ModelSerializer):
             project=Project.objects.get(id=self.context.get('project_id')),
             status=validated_data.get('status'),
             author_user=self.context.get('request').user,
-            assignee_user=User.objects.get(id=validated_data.get('assignee_user')),
+            assignee_user=User.objects.get(id=validated_data.get('assignee_user').id),
         )
         issue.save()
         return issue
