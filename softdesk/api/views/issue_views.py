@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api.serializers import IssueSerializer
 from core.issues.models import Issue
-from api.views.validation_functions import get_project_and_ensure_access, not_contributor
+from api.views.validation_functions import get_project_and_ensure_access, not_contributor, get_issue_and_ensure_access
 
 
 class Issues(APIView):
@@ -43,3 +43,25 @@ class Issues(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(issue_data, safe=False, status=status.HTTP_201_CREATED)
+
+    def put(self, request, project_id, issue_id):
+        """Update issue by issue_id of a projet by project_id"""
+
+        user = request.user
+        issue_updated_data = request.data
+        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
+
+        # project error case
+        if error_message:
+            return JsonResponse(error_message, safe=False, status=error_code)
+
+        issue_to_update, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, author=user)
+        # issue error case
+        if error_message:
+            return JsonResponse(error_message, safe=False, status=error_code)
+
+        # update issue data
+        serializer = self.serializer_class(issue_to_update, data=issue_updated_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
