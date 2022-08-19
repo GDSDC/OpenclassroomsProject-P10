@@ -77,9 +77,10 @@ class Contributors(APIView):
         # delete contributor
         # TODO : Gérer le cas ou l'author voudrait se retirer lui-même de la liste des contributors ?
         deleted_count, _ = Contributor.objects.filter(user=user_to_delete, project=project).delete()
-        status_code = status.HTTP_200_OK
         if deleted_count == 1:
             message = f"USER {user_to_delete.email} REMOVED FROM CONTRIBUTORS OF PROJECT !"
+            status_code = status.HTTP_200_OK
         else:
             message = f"USER {user_to_delete.email} IS NOT CONTRIBUTOR OF PROJECT !"
+            status_code = status.HTTP_204_NO_CONTENT
         return JsonResponse(message, safe=False, status=status_code)
