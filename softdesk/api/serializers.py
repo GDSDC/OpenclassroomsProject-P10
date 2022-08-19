@@ -87,7 +87,7 @@ class IssueSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs["assignee_user"] not in [contributor.user for contributor in
-                                          Contributor.objects.filter(project_id=self.context.get('project_id'))]:
+                                          Contributor.objects.filter(project_id=self.context.get("project_id"))]:
             raise serializers.ValidationError({"assignee_user": "assignee_user not contributor of project."})
         return attrs
 
@@ -109,7 +109,7 @@ class IssueSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # TODO : handle 'assignee_user not contributor of project' error
         instance.title = validated_data.get('title', instance.title)
-        instance.desc = validated_data.get('desc', instance.description)
+        instance.desc = validated_data.get('desc', instance.desc)
         instance.tag = validated_data.get('tag', instance.tag)
         instance.priority = validated_data.get('priority', instance.priority)
         instance.status = validated_data.get('status', instance.status)

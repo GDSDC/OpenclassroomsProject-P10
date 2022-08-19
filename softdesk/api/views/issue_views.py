@@ -61,7 +61,7 @@ class Issues(APIView):
             return JsonResponse(error_message, safe=False, status=error_code)
 
         # update issue data
-        serializer = self.serializer_class(issue_to_update, data=issue_updated_data)
+        serializer = self.serializer_class(issue_to_update, data=issue_updated_data, context={'project_id': project_id})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
