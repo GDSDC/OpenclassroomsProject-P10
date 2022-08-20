@@ -3,7 +3,7 @@ from core.users.models import User
 from core.contributors.models import Contributor
 from core.projects.models import Project
 from core.issues.models import Issue
-from django.contrib.auth import authenticate
+from core.comments.models import Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -78,6 +78,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         return instance
 
 
+class ContributorSerializer(serializers.ModelSerializer):
+    """Serializer class for contributors"""
+
+    user_email = serializers.CharField(read_only=True, source='user.email')
+
+    class Meta:
+        model = Contributor
+        fields = ['user_email', 'role_name']
+
+
 class IssueSerializer(serializers.ModelSerializer):
     """Serializer class for Issues"""
 
@@ -107,7 +117,6 @@ class IssueSerializer(serializers.ModelSerializer):
         return issue
 
     def update(self, instance, validated_data):
-        # TODO : handle 'assignee_user not contributor of project' error
         instance.title = validated_data.get('title', instance.title)
         instance.desc = validated_data.get('desc', instance.desc)
         instance.tag = validated_data.get('tag', instance.tag)
@@ -118,11 +127,24 @@ class IssueSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ContributorSerializer(serializers.ModelSerializer):
-    """Serializer class for contributors"""
-
-    user_email = serializers.CharField(read_only=True, source='user.email')
+class CommentSerializer(serializers.ModelSerializer):
+    """Serializer class for Comments"""
 
     class Meta:
-        model = Contributor
-        fields = ['user_email', 'role_name']
+        model = Comment
+        fields = ['description']
+
+    def create(self, validated_data):
+        # Creating Comment
+        comment = Comment.objects.create(
+            description=validated_data.get('description'),
+            author_user=self.context.get('request').user,
+            issue=Issue.objects.get(id=self.context.get('issue_id')),
+            )
+        comment.save()
+        return comment
+
+    def update(self, instance, validated_data):
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance
