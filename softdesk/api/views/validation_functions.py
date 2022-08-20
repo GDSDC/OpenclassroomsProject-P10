@@ -45,13 +45,10 @@ def get_project_and_ensure_access(project_id: int, author: Optional[User] = None
     if project is None:
         return None, MESSAGES['project_not_found'], status.HTTP_404_NOT_FOUND
 
-    if author is not None and not contributor_service.is_contributor(project,
-                                                                     contributor=user,
+    if author is not None and not contributor_service.is_contributor(project, contributor=user,
                                                                      with_role=Contributor.Role.AUTHOR):
         return project, MESSAGES['not_project_author'], status.HTTP_403_FORBIDDEN
-    elif contributor is not None and not contributor_service.is_contributor(project,
-                                                                            contributor=user,
-                                                                            with_role=Contributor.Role.CONTRIBUTOR):
+    elif contributor is not None and not contributor_service.is_contributor(project, contributor=user):
         return project, MESSAGES['not_project_contributor'], status.HTTP_403_FORBIDDEN
 
     return project, None, None
