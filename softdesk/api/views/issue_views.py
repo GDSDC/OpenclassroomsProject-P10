@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from api.serializers import IssueSerializer
 from core.issues.models import Issue
 from api.views.validation_functions import get_project_and_ensure_access, get_issue_and_ensure_access
+from core.issues import services as issue_services
 
 
 class Issues(APIView):
@@ -49,10 +50,10 @@ class Issues(APIView):
 
         user = request.user
         issue_updated_data = request.data
-        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id,
-                                                                                     contributor=user)
 
         # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id,
+                                                                                     contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
@@ -60,6 +61,10 @@ class Issues(APIView):
         # issue error case
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
+
+        # issue belongs to project
+        if not issue_services.is_issue(project=project,issue=issue_to_update):
+            return JsonResponse(f"ISSUE '{issue_to_update.id}' DO NOT BELONGS TO PROJECT '{project.id}' !")
 
         # update issue data
         serializer = self.serializer_class(issue_to_update, data=issue_updated_data, context={'project_id': project_id})
@@ -81,6 +86,10 @@ class Issues(APIView):
         issue_to_delete, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, author=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
+
+        # issue belongs to project
+        if not issue_services.is_issue(project=project,issue=issue_to_delete):
+            return JsonResponse(f"ISSUE '{issue_to_delete.id}' DO NOT BELONGS TO PROJECT '{project.id}' !")
 
         # delete issue
         issue_to_delete.delete()
