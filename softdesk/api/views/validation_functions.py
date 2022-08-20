@@ -56,18 +56,15 @@ def get_project_and_ensure_access(project_id: int, author: Optional[User] = None
 
 # ----------- GETTING ISSUE BY ID ------------------
 
-def get_issue_and_ensure_access(issue_id: int, author: User) \
+def get_issue_and_ensure_access(issue_id: int, author: Optional[User] = None) \
         -> Tuple[Optional[Issue], Optional[str], Optional[int]]:
     """Function to get project if it exists and Optional[if user is the author or user is contributor]"""
-    user = author
-    if user is None:
-        raise ValueError('You must pass at least one user')
 
     issue = issues_service.get_issue(issue_id)
     if issue is None:
         return None, MESSAGES['issue_not_found'], status.HTTP_404_NOT_FOUND
 
-    if not issue.author_user == user:
+    if author and not issue.author_user == author:
         return issue, MESSAGES['not_issue_author'], status.HTTP_403_FORBIDDEN
 
     return issue, None, None

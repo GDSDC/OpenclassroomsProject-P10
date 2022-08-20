@@ -4,7 +4,7 @@ from api.views.test_views import TestAuth
 from api.views.project_views import GeneralProjects, Projects
 from api.views.contributor_views import Contributors
 from api.views.issue_views import Issues
-from api.views.comment_views import GeneralComments
+from api.views.comment_views import GeneralComments, Comments
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -20,6 +20,7 @@ urlpatterns = [
     path('projects/<int:project_id>/issues/', Issues.as_view()),
     path('projects/<int:project_id>/issues/<int:issue_id>', Issues.as_view()),
     path('projects/<int:project_id>/issues/<int:issue_id>/comments/', GeneralComments.as_view()),
+    path('projects/<int:project_id>/issues/<int:issue_id>/comments/<int:comment_id>', Comments.as_view()),
 
     # test
     path('me/', TestAuth.as_view(), name='me'),
