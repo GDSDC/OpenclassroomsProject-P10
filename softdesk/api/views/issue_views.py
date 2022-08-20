@@ -42,7 +42,7 @@ class Issues(APIView):
         serializer = self.serializer_class(data=issue_data, context={'request': request, 'project_id': project_id})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return JsonResponse(issue_data, safe=False, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_201_CREATED)
 
     def put(self, request, project_id, issue_id):
         """Update issue by issue_id of a projet by project_id"""
