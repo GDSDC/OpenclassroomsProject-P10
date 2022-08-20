@@ -47,6 +47,8 @@ class Issues(APIView):
     def put(self, request, project_id, issue_id):
         """Update issue by issue_id of a projet by project_id"""
 
+        # TODO : s'assurer que cela marche
+        #  travailler sur get_issue_and_ensure_access pour s'assurer que celui qui modifie/supprime est bien l'auteur
         user = request.user
         issue_updated_data = request.data
         project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
