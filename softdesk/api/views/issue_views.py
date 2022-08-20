@@ -47,11 +47,10 @@ class Issues(APIView):
     def put(self, request, project_id, issue_id):
         """Update issue by issue_id of a projet by project_id"""
 
-        # TODO : s'assurer que cela marche
-        #  travailler sur get_issue_and_ensure_access pour s'assurer que celui qui modifie/supprime est bien l'auteur
         user = request.user
         issue_updated_data = request.data
-        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
+        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id,
+                                                                                     contributor=user)
 
         # project error case
         if error_message:
@@ -67,3 +66,22 @@ class Issues(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, project_id, issue_id):
+        """Delete issue by issue_id of a projet by project_id"""
+
+        user = request.user
+
+        # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
+        if error_message:
+            return JsonResponse(error_message, safe=False, status=error_code)
+
+        # issue error case
+        issue_to_delete, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, author=user)
+        if error_message:
+            return JsonResponse(error_message, safe=False, status=error_code)
+
+        # delete issue
+        issue_to_delete.delete()
+        return JsonResponse(f"ISSUE '{issue_id}' DELETED !", safe=False, status=status.HTTP_200_OK)
