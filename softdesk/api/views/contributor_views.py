@@ -36,13 +36,13 @@ class Contributors(APIView):
 
         user = request.user
 
-        # user error case
-        user_to_add, error_message, error_code = get_user(user_id=user_id)
+        # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        # project error case
-        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
+        # user error case
+        user_to_add, error_message, error_code = get_user(user_id=user_id)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
@@ -62,13 +62,13 @@ class Contributors(APIView):
 
         user = request.user
 
-        # user error case
-        user_to_delete, error_message, error_code = get_user(user_id=user_id)
+        # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        # project error case
-        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
+        # user error case
+        user_to_delete, error_message, error_code = get_user(user_id=user_id)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
