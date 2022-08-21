@@ -22,7 +22,7 @@ class Issue(models.Model):
         INPROGRESS = 'INPROGRESS', 'In Progress'
         DONE = 'DONE', 'Done'
 
-    title = models.CharField(max_length=60, unique=True)
+    title = models.CharField(max_length=60)
     desc = models.CharField(max_length=512, blank=True)
     tag = models.CharField(max_length=12, choices=Tag.choices)
     priority = models.CharField(max_length=6, choices=Priority.choices)
@@ -33,3 +33,6 @@ class Issue(models.Model):
     assignee_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
                                       related_name='assignee')
     created_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('title','project',)
