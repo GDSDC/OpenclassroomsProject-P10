@@ -39,7 +39,7 @@ class Projects(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -53,7 +53,7 @@ class Projects(APIView):
         user = request.user
         project_updated_data = request.data
 
-        # project error case
+        # project error case : Author
         project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -69,7 +69,7 @@ class Projects(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Author
         project_to_delete, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)

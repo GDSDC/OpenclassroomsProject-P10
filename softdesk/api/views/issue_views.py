@@ -18,7 +18,7 @@ class Issues(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -34,7 +34,7 @@ class Issues(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -51,13 +51,13 @@ class Issues(APIView):
         user = request.user
         issue_updated_data = request.data
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id,
                                                                            contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        # issue error case
+        # issue error case : Author
         issue_to_update, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, project=project,
                                                                                  author=user)
         if error_message:
@@ -74,12 +74,12 @@ class Issues(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        # issue error case
+        # issue error case : Author
         issue_to_delete, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, project=project,
                                                                                  author=user)
         if error_message:

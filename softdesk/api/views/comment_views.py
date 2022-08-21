@@ -21,7 +21,7 @@ class GeneralComments(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -42,7 +42,7 @@ class GeneralComments(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -69,7 +69,7 @@ class Comments(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -79,7 +79,7 @@ class Comments(APIView):
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        # comment error case
+        # comment error case : Contributor
         comment, error_message, error_code = get_comment_and_ensure_access(comment_id=comment_id, issue=issue)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -93,7 +93,7 @@ class Comments(APIView):
         user = request.user
         comment_updated_data = request.data
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -103,7 +103,7 @@ class Comments(APIView):
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        # comment error case
+        # comment error case : Author
         comment_to_update, error_message, error_code = get_comment_and_ensure_access(comment_id=comment_id, issue=issue,
                                                                                      author=user)
         if error_message:
@@ -120,7 +120,7 @@ class Comments(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -130,7 +130,7 @@ class Comments(APIView):
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        # comment error case
+        # comment error case : Author
         comment_to_delete, error_message, error_code = get_comment_and_ensure_access(comment_id=comment_id, issue=issue,
                                                                                      author=user)
         if error_message:

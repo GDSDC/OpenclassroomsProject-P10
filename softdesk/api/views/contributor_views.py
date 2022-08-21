@@ -19,7 +19,7 @@ class Contributors(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Contributor
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -36,7 +36,7 @@ class Contributors(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Author
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
@@ -62,7 +62,7 @@ class Contributors(APIView):
 
         user = request.user
 
-        # project error case
+        # project error case : Author
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
