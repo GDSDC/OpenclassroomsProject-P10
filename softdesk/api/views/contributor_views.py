@@ -72,8 +72,12 @@ class Contributors(APIView):
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
+        # author can not remove himself from contributors
+        if user_to_delete == user:
+            return JsonResponse("AS AUTHOR OF THE PROJECT, YOU CAN NOT REMOVE YOURSELF FROM CONTRIBUTORS.", safe=False,
+                                status=status.HTTP_403_FORBIDDEN)
+
         # delete contributor
-        # TODO : Gérer le cas ou l'author voudrait se retirer lui-même de la liste des contributors ?
         deleted_count, _ = Contributor.objects.filter(user=user_to_delete, project=project).delete()
         if deleted_count:
             message = f"USER {user_to_delete.email} REMOVED FROM CONTRIBUTORS OF PROJECT !"
