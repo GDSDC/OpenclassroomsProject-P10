@@ -21,6 +21,9 @@ MESSAGES = {
     'not_issue_author': 'ACCESS FORBIDDEN. USER IS NOT AUTHOR OF THIS ISSUE.',
     'not_comment_author': 'ACCESS FORBIDDEN. USER IS NOT AUTHOR OF THIS COMMENT.',
     'contributor_already_exists': 'USER IS ALREADY CONTRIBUTOR OF THIS PROJECT.',
+    'issue_not_in_project' : 'ISSUE DO NOT BELONGS TO PROJECT. WRONG issue_id AND_OR project_id.',
+    'comment_not_in_issue': 'COMMENT DO NOT BELONGS TO ISSUE. WRONG comment_id AND_OR issue_id.',
+
 }
 
 
@@ -60,31 +63,45 @@ def get_project_and_ensure_access(project_id: int, author: Optional[User] = None
 
 # ----------- GETTING ISSUE BY ID ------------------
 
-def get_issue_and_ensure_access(issue_id: int, author: Optional[User] = None) \
+def get_issue_and_ensure_access(issue_id: int, project: Project, author: Optional[User] = None) \
         -> Tuple[Optional[Issue], Optional[str], Optional[int]]:
     """Function to get project if it exists and Optional[if user is the author or user is contributor]"""
 
     issue = issues_service.get_issue(issue_id)
+
+    # issue not found
     if issue is None:
         return None, MESSAGES['issue_not_found'], status.HTTP_404_NOT_FOUND
 
+    # user not author of issue
     if author and not issue.author_user == author:
         return issue, MESSAGES['not_issue_author'], status.HTTP_403_FORBIDDEN
+
+    # issue do not belong to project
+    if not issues_service.is_issue(project=project, issue=issue):
+        return issue, MESSAGES['issue_not_in_project'], status.HTTP_404_NOT_FOUND
 
     return issue, None, None
 
 
 # ----------- GETTING COMMENT BY ID ------------------
 
-def get_comment_and_ensure_access(comment_id: int, author: Optional[User] = None) \
+def get_comment_and_ensure_access(comment_id: int, issue:Issue, author: Optional[User] = None) \
         -> Tuple[Optional[Comment], Optional[str], Optional[int]]:
     """Function to get project if it exists and Optional[if user is the author or user is contributor]"""
 
     comment = comments_service.get_comment(comment_id)
+
+    # comment not found
     if comment is None:
         return None, MESSAGES['comment_not_found'], status.HTTP_404_NOT_FOUND
 
+    # user not author of comment
     if author and not comment.author_user == author:
         return comment, MESSAGES['not_comment_author'], status.HTTP_403_FORBIDDEN
+
+    # comment do not belong to issue
+    if not comments_service.is_comment(issue=issue, comment=comment):
+        return comment, MESSAGES['comment_not_in_issue'], status.HTTP_404_NOT_FOUND
 
     return comment, None, None

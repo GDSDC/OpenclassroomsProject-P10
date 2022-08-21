@@ -8,8 +8,6 @@ from api.views.validation_functions import \
     get_issue_and_ensure_access, \
     get_comment_and_ensure_access
 from core.comments.models import Comment
-from core.issues import services as issue_services
-from core.comments import services as comment_services
 
 
 class GeneralComments(APIView):
@@ -66,24 +64,15 @@ class Comments(APIView):
             return JsonResponse(error_message, safe=False, status=error_code)
 
         # issue error case
-        issue, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id)
+        issue, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, project=project)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
-
-        # issue belongs to project
-        if not issue_services.is_issue(project=project, issue=issue):
-            return JsonResponse(f"ISSUE '{issue.id}' DO NOT BELONGS TO PROJECT '{project.id}' !", safe=False,
-                                status=status.HTTP_404_NOT_FOUND)
 
         # comment error case
-        comment, error_message, error_code = get_comment_and_ensure_access(comment_id=comment_id, author=user)
+        comment, error_message, error_code = get_comment_and_ensure_access(comment_id=comment_id, issue=issue,
+                                                                           author=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
-
-        # comment belongs to issue
-        if not comment_services.is_comment(issue=issue, comment=comment):
-            return JsonResponse(f"COMMENT '{comment.id}' DO NOT BELONGS TO ISSUE '{issue.id}' !", safe=False,
-                                status=status.HTTP_404_NOT_FOUND)
 
         # get comment data
         return JsonResponse(self.serializer_class(comment).data, safe=False, status=status.HTTP_200_OK)
