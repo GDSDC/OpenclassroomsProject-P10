@@ -139,4 +139,3 @@ class Comments(APIView):
         # delete comment
         comment_to_delete.delete()
         return JsonResponse(f"COMMENT '{comment_id}' DELETED !", safe=False, status=status.HTTP_200_OK)
-
