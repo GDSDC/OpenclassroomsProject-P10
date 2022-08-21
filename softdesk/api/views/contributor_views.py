@@ -18,9 +18,9 @@ class Contributors(APIView):
         """Get Contributors list of project by project_id"""
 
         user = request.user
-        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
 
-        # error case
+        # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
@@ -35,15 +35,14 @@ class Contributors(APIView):
         """Let the author of a project add a user as contributor by project_id and user_id"""
 
         user = request.user
-        user_to_add, error_message, error_code = get_user(user_id=user_id)
 
-        # error case : user_to_add do not exist
+        # user error case
+        user_to_add, error_message, error_code = get_user(user_id=user_id)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
-
         # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
@@ -62,15 +61,14 @@ class Contributors(APIView):
         """Let the author of a project delete a contributor by project_id and user_id"""
 
         user = request.user
-        user_to_delete, error_message, error_code = get_user(user_id=user_id)
 
-        # error case : user_to_delete do not exist
+        # user error case
+        user_to_delete, error_message, error_code = get_user(user_id=user_id)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 
-        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
-
         # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_code is not None:
             return JsonResponse(error_message, safe=False, status=error_code)
 

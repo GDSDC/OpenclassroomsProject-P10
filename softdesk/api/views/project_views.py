@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -38,9 +37,9 @@ class Projects(APIView):
         """Get project info by project_id"""
 
         user = request.user
-        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
 
-        #error case
+        # project error case
+        project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
@@ -52,9 +51,9 @@ class Projects(APIView):
 
         user = request.user
         project_updated_data = request.data
-        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
 
-        # error case
+        # project error case
+        project_to_update, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
@@ -68,9 +67,9 @@ class Projects(APIView):
         """Delete project by project_id"""
 
         user = request.user
-        project_to_delete, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
 
-        # error case
+        # project error case
+        project_to_delete, error_message, error_code = get_project_and_ensure_access(project_id=project_id, author=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
