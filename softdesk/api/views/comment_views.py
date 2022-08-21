@@ -25,6 +25,11 @@ class GeneralComments(APIView):
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
+        # issue error case
+        issue, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, project=project)
+        if error_message:
+            return JsonResponse(error_message, safe=False, status=error_code)
+
         # get comments
         issue_comments = Comment.objects.filter(issue_id=issue_id)
         comments = self.serializer_class(issue_comments, many=True)
@@ -38,6 +43,11 @@ class GeneralComments(APIView):
 
         # project error case
         project, error_message, error_code = get_project_and_ensure_access(project_id=project_id, contributor=user)
+        if error_message:
+            return JsonResponse(error_message, safe=False, status=error_code)
+
+        # issue error case
+        issue, error_message, error_code = get_issue_and_ensure_access(issue_id=issue_id, project=project)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
 
