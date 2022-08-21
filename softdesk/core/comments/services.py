@@ -1,5 +1,6 @@
 from typing import Optional
 from core.comments.models import Comment
+from core.issues.models import Issue
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -11,6 +12,14 @@ def get_comment(comment_id: int) -> Optional[Comment]:
         return Comment.objects.get(id=comment_id)
     except ObjectDoesNotExist:
         return None
+
+# ----------- CHECKING IF COMMENT BELONGS TO ISSUE ------------------
+
+def is_comment(issue:Issue,comment:Comment) -> bool:
+    """Function that check if an issue belongs to a project"""
+
+    return comment in Comment.objects.filter(issue=issue)
+
 
 
 
