@@ -1,14 +1,15 @@
-from typing import Tuple, Optional
 from rest_framework import status
-from core.contributors.models import Contributor
-from core.users.models import User
-from core.projects.models import Project
-from core.issues.models import Issue
+from typing import Tuple, Optional
+
+from core.comments import services as comments_service
 from core.comments.models import Comment
 from core.contributors import services as contributor_service
+from core.contributors.models import Contributor
 from core.issues import services as issues_service
+from core.issues.models import Issue
 from core.projects import services as projects_service
-from core.comments import services as comments_service
+from core.projects.models import Project
+from core.users.models import User
 from core.users.services import user_exists
 
 MESSAGES = {
@@ -21,7 +22,7 @@ MESSAGES = {
     'not_issue_author': 'ACCESS FORBIDDEN. USER IS NOT AUTHOR OF THIS ISSUE.',
     'not_comment_author': 'ACCESS FORBIDDEN. USER IS NOT AUTHOR OF THIS COMMENT.',
     'contributor_already_exists': 'USER IS ALREADY CONTRIBUTOR OF THIS PROJECT.',
-    'issue_not_in_project' : 'ISSUE DO NOT BELONGS TO PROJECT. WRONG issue_id AND_OR project_id.',
+    'issue_not_in_project': 'ISSUE DO NOT BELONGS TO PROJECT. WRONG issue_id AND_OR project_id.',
     'comment_not_in_issue': 'COMMENT DO NOT BELONGS TO ISSUE. WRONG comment_id AND_OR issue_id.',
 
 }
@@ -91,7 +92,7 @@ def get_issue_and_ensure_access(issue_id: int, project: Project, author: Optiona
 
 # ----------- GETTING COMMENT BY ID ------------------
 
-def get_comment_and_ensure_access(comment_id: int, issue:Issue, author: Optional[User] = None) \
+def get_comment_and_ensure_access(comment_id: int, issue: Issue, author: Optional[User] = None) \
         -> Tuple[Optional[Comment], Optional[str], Optional[int]]:
     """Function to get project if it exists and Optional[if user is the author or user is contributor]"""
 

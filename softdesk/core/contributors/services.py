@@ -1,6 +1,7 @@
 from typing import Optional
-from core.projects.models import Project
+
 from core.contributors.models import Contributor
+from core.projects.models import Project
 from core.users.models import User
 
 

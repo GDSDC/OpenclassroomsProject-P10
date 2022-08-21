@@ -1,14 +1,12 @@
 from django.urls import path
-from api.views.user_views import SignUpAPIView
-from api.views.test_views import TestAuth
-from api.views.project_views import GeneralProjects, Projects
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from api.views.comment_views import GeneralComments, Comments
 from api.views.contributor_views import Contributors
 from api.views.issue_views import Issues
-from api.views.comment_views import GeneralComments, Comments
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from api.views.project_views import GeneralProjects, Projects
+from api.views.test_views import TestAuth
+from api.views.user_views import SignUpAPIView
 
 urlpatterns = [
     path('signup/', SignUpAPIView.as_view()),

@@ -1,10 +1,11 @@
-from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from api.serializers import IssueSerializer
-from core.issues.models import Issue
 from api.views.validation_functions import get_project_and_ensure_access, get_issue_and_ensure_access
+from core.issues.models import Issue
 
 
 class Issues(APIView):
@@ -83,7 +84,6 @@ class Issues(APIView):
                                                                                  author=user)
         if error_message:
             return JsonResponse(error_message, safe=False, status=error_code)
-
 
         # delete issue
         issue_to_delete.delete()

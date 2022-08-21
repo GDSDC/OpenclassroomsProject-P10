@@ -1,9 +1,7 @@
 from django.conf import settings
 from django.db import models
+
 from core.projects.models import Project
-
-
-
 
 
 class Contributor(models.Model):

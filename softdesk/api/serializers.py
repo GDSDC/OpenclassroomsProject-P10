@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from core.users.models import User
-from core.contributors.models import Contributor
-from core.projects.models import Project
-from core.issues.models import Issue
+
 from core.comments.models import Comment
+from core.contributors.models import Contributor
+from core.issues.models import Issue
+from core.projects.models import Project
+from core.users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -140,7 +141,7 @@ class CommentSerializer(serializers.ModelSerializer):
             description=validated_data.get('description'),
             author_user=self.context.get('request').user,
             issue=Issue.objects.get(id=self.context.get('issue_id')),
-            )
+        )
         comment.save()
         return comment
 

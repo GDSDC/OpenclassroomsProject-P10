@@ -1,12 +1,12 @@
-from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from api.serializers import ContributorSerializer
-from core.contributors.models import Contributor
-from core.users.models import User
-from core.contributors import services as contributor_service
 from api.views.validation_functions import get_project_and_ensure_access, get_user
+from core.contributors import services as contributor_service
+from core.contributors.models import Contributor
 
 
 class Contributors(APIView):

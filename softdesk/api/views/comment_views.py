@@ -1,7 +1,8 @@
-from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from api.serializers import CommentSerializer
 from api.views.validation_functions import \
     get_project_and_ensure_access, \
