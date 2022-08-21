@@ -17,7 +17,7 @@ MESSAGES = {
     'user_not_found': 'USER NOT FOUND. WRONG ID.',
     'issue_not_found': 'ISSUE NOT FOUND. WRONG ID.',
     'comment_not_found': 'COMMENT NOT FOUND. WRONG ID.',
-    'not_project_author': 'ACCESS FORBIDDEN. PLEASE CONTACT PROJECT AUTHOR.',
+    'not_project_author': 'ACCESS FORBIDDEN. USER IS NOT AUTHOR OF THIS PROJECT.',
     'not_project_contributor': 'ACCESS FORBIDDEN. USER IS NOT CONTRIBUTOR OF THIS PROJECT.',
     'not_issue_author': 'ACCESS FORBIDDEN. USER IS NOT AUTHOR OF THIS ISSUE.',
     'not_comment_author': 'ACCESS FORBIDDEN. USER IS NOT AUTHOR OF THIS COMMENT.',
