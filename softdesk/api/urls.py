@@ -14,11 +14,11 @@ urlpatterns = [
     path('projects/', GeneralProjects.as_view()),
     path('projects/<int:project_id>/', Projects.as_view()),
     path('projects/<int:project_id>/users/', Contributors.as_view()),
-    path('projects/<int:project_id>/users/<int:user_id>', Contributors.as_view()),
+    path('projects/<int:project_id>/users/<int:user_id>/', Contributors.as_view()),
     path('projects/<int:project_id>/issues/', Issues.as_view()),
-    path('projects/<int:project_id>/issues/<int:issue_id>', Issues.as_view()),
+    path('projects/<int:project_id>/issues/<int:issue_id>/', Issues.as_view()),
     path('projects/<int:project_id>/issues/<int:issue_id>/comments/', GeneralComments.as_view()),
-    path('projects/<int:project_id>/issues/<int:issue_id>/comments/<int:comment_id>', Comments.as_view()),
+    path('projects/<int:project_id>/issues/<int:issue_id>/comments/<int:comment_id>/', Comments.as_view()),
 
     # test
     path('me/', TestAuth.as_view(), name='me'),
