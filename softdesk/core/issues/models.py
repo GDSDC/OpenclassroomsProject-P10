@@ -34,5 +34,4 @@ class Issue(models.Model):
                                       related_name='assignee')
     created_time = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('title','project',)
+

@@ -97,9 +97,15 @@ class IssueSerializer(serializers.ModelSerializer):
         fields = ['title', 'desc', 'tag', 'priority', 'status', 'assignee_user']
 
     def validate(self, attrs):
+        # check for assignee_user in contributors of the project
         if attrs["assignee_user"] not in [contributor.user for contributor in
                                           Contributor.objects.filter(project_id=self.context.get("project_id"))]:
             raise serializers.ValidationError({"assignee_user": "assignee_user not contributor of project."})
+        # check if title is not already used for another issue of the project
+        if attrs["title"] in [issue.title for issue in
+                                          Issue.objects.filter(project_id=self.context.get("project_id"))]:
+            raise serializers.ValidationError(
+                {"title": "title already used for this project. please chose a different title."})
         return attrs
 
     def create(self, validated_data):
