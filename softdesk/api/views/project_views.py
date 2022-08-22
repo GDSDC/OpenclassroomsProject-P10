@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from api.serializers import ProjectSerializer
 from api.views.validation_functions import get_project_and_ensure_access
-from core.projects.models import Project
+from core.contributors.models import Contributor
 
 
 class GeneralProjects(APIView):
@@ -16,7 +16,7 @@ class GeneralProjects(APIView):
     def get(self, request):
         """Get list of projects created by user"""
         user = request.user
-        user_projects = Project.objects.filter(author_user=user)
+        user_projects = [contributor.project for contributor in Contributor.objects.filter(user=user)]
         projects = self.serializer_class(user_projects, many=True)
         return JsonResponse(projects.data, safe=False, status=status.HTTP_200_OK)
 
