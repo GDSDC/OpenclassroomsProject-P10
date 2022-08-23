@@ -84,5 +84,5 @@ class Contributors(APIView):
             status_code = status.HTTP_200_OK
         else:
             message = f"USER {user_to_delete.email} IS NOT CONTRIBUTOR OF PROJECT !"
-            status_code = status.HTTP_204_NO_CONTENT
+            status_code = status.HTTP_400_BAD_REQUEST
         return JsonResponse(message, safe=False, status=status_code)
