@@ -1,0 +1,1325 @@
+{
+	"info": {
+		"_postman_id": "06a0a63c-96ab-45cd-9c6a-1d1618f23ff1",
+		"name": "4. issues",
+		"description": "# Issues Collection\n\nThis collection contains 4 uses cases for user to create, update, delete an issue and get informations about.\n\n## Get started\n\n*   **GET issues list :** Get the list of all issues of a project.\n*   **CREATE issue :** Create a new issue.\n*   **UPDATE issue :** Update informations of an issue.\n*   **DELETE issue :** Delete an issue.\n    \n\n## Prerequisites\n\nUser need at least to be **contributor of the project** to access collection requests.\n\n## **Variables Reference**\n\nThe following variables should be setup as Postman environment variables before running any tests.\n\n| **Variable** | **Description** |\n| --- | --- |\n| host | The host. In our case, the django virtual host : [http://127.0.0.1:8000](http://127.0.0.1:8000) |\n| bearer_token | Token you get when login. Needed for authorization. |\n| project_id | Id of the project in database. Type : integer. |\n| issue_id | Id of an issue in database. Type : integer. |",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11247386"
+	},
+	"item": [
+		{
+			"name": "GET issues list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/projects/{{project_id}}/issues/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"projects",
+						"{{project_id}}",
+						"issues",
+						""
+					]
+				},
+				"description": "Get the list of all issues of a project that you are contributor.\n\n**Needed** :  \n\\- bearer_token  \n\\- project_id\n\n**Response Status :**  \n\\- 200 OK  \n\\- 401 Unauthorized : token is invalid or expired  \n\\- 403 Forbidden : access forbidden. user is not contributor of this project.  \n\\- 404 Not Found : project not found. wrong id."
+			},
+			"response": [
+				{
+					"name": "successful issue list",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/projects/1/issues/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"projects",
+								"1",
+								"issues",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:47:11 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "123"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"title\": \"title_issue_1\",\n        \"desc\": \"desc_issue_1\",\n        \"tag\": \"BUG\",\n        \"priority\": \"LOW\",\n        \"status\": \"TODO\",\n        \"assignee_user\": 2\n    }\n]"
+				},
+				{
+					"name": "error : project not found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								""
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:47:53 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "30"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"PROJECT NOT FOUND. WRONG ID.\""
+				}
+			]
+		},
+		{
+			"name": "CREATE issue",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"title_issue_1\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/projects/{{project_id}}/issues/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"projects",
+						"{{project_id}}",
+						"issues",
+						""
+					]
+				},
+				"description": "Create a new issue using **title, desc, tag, priority, assignee_user and status**.\n\n| **Field Name** | **Type** |\n| --- | --- |\n| title | string (max_length=60) |\n| desc | string (max_length=512, can be blank) |\n| tag | BUG / TASK / IMPROVEMENT |\n| priority | LOW / MEDIUM / HIGH |\n| assignee_user | integer corresponding to a user_id |\n| status | TODO / INPROGRESS / DONE |\n\n**Prerequisites :**  \n\\- issue title must be **unique** within a project  \n\\- assignee_user must be the id of a user which is **contributor** to the project\n\n**Needed** :  \n\\- bearer_token  \n\\- project_id\n\n**Response Status :**  \n\\- 201 Created : issue created successfully  \n\\- 400 Bad Request : wrong data format, missing field or issue title already used within the project  \n\\- 401 Unauthorized : token is invalid or expired  \n\\- 403 Forbidden : access forbidden. user is not contributor of this project.  \n\\- 404 Not Found : project not found. wrong id."
+			},
+			"response": [
+				{
+					"name": "successful issue creation",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_1\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 3,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/projects/1/issues/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"projects",
+								"1",
+								"issues",
+								""
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 15:01:40 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "121"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"title\": \"title_issue_1\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"status\": \"TODO\",\n    \"assignee_user\": 3\n}"
+				},
+				{
+					"name": "error : project not found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_1\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 1,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								""
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 15:00:30 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "30"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"PROJECT NOT FOUND. WRONG ID.\""
+				},
+				{
+					"name": "error : assignee_user not contributor",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_1\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 1,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 15:02:34 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "63"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"assignee_user\": [\n        \"assignee_user not contributor of project.\"\n    ]\n}"
+				},
+				{
+					"name": "error : title already used",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_1\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:53:42 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "82"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"title\": [\n        \"title already used for this project. please chose a different title.\"\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "UPDATE issue",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"projects",
+						"{{project_id}}",
+						"issues",
+						"{{issue_id}}",
+						""
+					]
+				},
+				"description": "Update issue informations using **issue_id**.\n\n| **Field Name** | **Type** |\n| --- | --- |\n| title | string (max_length=60) |\n| desc | string (max_length=512, can be blank) |\n| tag | BUG / TASK / IMPROVEMENT |\n| priority | LOW / MEDIUM / HIGH |\n| assignee_user | integer corresponding to a user_id |\n| status | TODO / INPROGRESS / DONE |\n\n**Prerequisites :**  \n\\- **only author** of issue can update issue information. Project contributors are not allowed to.  \n\\- issue title must be **unique** within a project  \n\\- assignee_user must be the id of a user which is **contributor** to the project\n\n**Needed** :  \n\\- bearer_token  \n\\- project_id  \n\\- issue_id\n\n**Response Status :**  \n\\- 200 OK : issue updated successfully  \n\\- 400 Bad Request : wrong data format, missing field or issue title already used within the project  \n\\- 401 Unauthorized : token is invalid or expired  \n\\- 403 Forbidden : access forbidden.  \n\\- 404 Not Found : project or issue not found. wrong id."
+			},
+			"response": [
+				{
+					"name": "successful issue update",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/projects/1/issues/1/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"projects",
+								"1",
+								"issues",
+								"1",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:42:55 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "121"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"status\": \"TODO\",\n    \"assignee_user\": 2\n}"
+				},
+				{
+					"name": "error : title already used",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:43:53 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "82"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"title\": [\n        \"title already used for this project. please chose a different title.\"\n    ]\n}"
+				},
+				{
+					"name": "error : project not found",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:44:48 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "30"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"PROJECT NOT FOUND. WRONG ID.\""
+				},
+				{
+					"name": "error : issue not found",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:45:16 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "28"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"ISSUE NOT FOUND. WRONG ID.\""
+				},
+				{
+					"name": "error : assignee_user not contributor",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 1,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:45:44 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "63"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"assignee_user\": [\n        \"assignee_user not contributor of project.\"\n    ]\n}"
+				},
+				{
+					"name": "error : access forbidden",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"title_issue_2\",\n    \"desc\": \"desc_issue_1\",\n    \"tag\": \"BUG\",\n    \"priority\": \"LOW\",\n    \"assignee_user\": 2,\n    \"status\": \"TODO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:51:46 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "60"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"ACCESS FORBIDDEN. USER IS NOT CONTRIBUTOR OF THIS PROJECT.\""
+				}
+			]
+		},
+		{
+			"name": "DELETE issue",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"projects",
+						"{{project_id}}",
+						"issues",
+						"{{issue_id}}",
+						""
+					]
+				},
+				"description": "Delete an issue using **issue_id**.\n\n**Prerequisites** :  \n\\- **only author** of issue can delete issue. Project contributors are not allowed to.\n\n**Needed** :  \n\\- bearer_token  \n\\- project_id  \n\\- issue_id\n\n**Response Status :**  \n\\- 200 OK : issue deleted successfully  \n\\- 401 Unauthorized : token is invalid or expired  \n\\- 403 Forbidden : access forbidden.  \n\\- 404 Not Found : project or issue not found. wrong id."
+			},
+			"response": [
+				{
+					"name": "successful issue delete",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/projects/1/issues/1/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"projects",
+								"1",
+								"issues",
+								"1",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:52:56 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "21"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"ISSUE '1' DELETED !\""
+				},
+				{
+					"name": "error : project not found",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:49:16 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "30"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"PROJECT NOT FOUND. WRONG ID.\""
+				},
+				{
+					"name": "error : issue not found",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:49:51 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "28"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"ISSUE NOT FOUND. WRONG ID.\""
+				},
+				{
+					"name": "error : access forbidden",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/projects/{{project_id}}/issues/{{issue_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"issues",
+								"{{issue_id}}",
+								""
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 22 Aug 2022 22:50:50 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.12"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "60"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "\"ACCESS FORBIDDEN. USER IS NOT CONTRIBUTOR OF THIS PROJECT.\""
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearer_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
