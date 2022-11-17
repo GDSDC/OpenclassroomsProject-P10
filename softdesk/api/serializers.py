@@ -1,8 +1,10 @@
 from rest_framework import serializers
-from core.users.models import User, Contributor
-from core.projects.models import Project
+
+from core.comments.models import Comment
+from core.contributors.models import Contributor
 from core.issues.models import Issue
-from django.contrib.auth import authenticate
+from core.projects.models import Project
+from core.users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -58,14 +60,14 @@ class ProjectSerializer(serializers.ModelSerializer):
             title=validated_data.get('title'),
             description=validated_data.get('description', ''),
             type=validated_data.get('type', ''),
-            author_user_id=self.context.get('request').user
+            author_user=self.context.get('request').user
         )
         project.save()
         # Creating initial Contributor
-        first_contributor = Contributor.objects.create(user_id=project.author_user_id,
-                                                       project_id=project,
+        first_contributor = Contributor.objects.create(user=project.author_user,
+                                                       project=project,
                                                        permission='RW',
-                                                       role='A')
+                                                       role='AUTHOR')
         first_contributor.save()
         return project
 
@@ -76,12 +78,80 @@ class ProjectSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class ContributorSerializer(serializers.ModelSerializer):
+    """Serializer class for contributors"""
+
+    user_email = serializers.CharField(read_only=True, source='user.email')
+
+    class Meta:
+        model = Contributor
+        fields = ['user_email', 'role_name']
+
+
 class IssueSerializer(serializers.ModelSerializer):
     """Serializer class for Issues"""
 
     class Meta:
         model = Issue
-        fields = ['title','desc','tag','priority','project_id','status','created_time']
+        fields = ['title', 'desc', 'tag', 'priority', 'status', 'assignee_user']
+
+    def validate(self, attrs):
+        # check for assignee_user in contributors of the project
+        if attrs["assignee_user"] not in [contributor.user for contributor in
+                                          Contributor.objects.filter(project_id=self.context.get("project_id"))]:
+            raise serializers.ValidationError({"assignee_user": "assignee_user not contributor of project."})
+        # check if title is not already used for another issue of the project
+        if attrs["title"] in [issue.title for issue in
+                                          Issue.objects.filter(project_id=self.context.get("project_id"))]:
+            raise serializers.ValidationError(
+                {"title": "title already used for this project. please chose a different title."})
+        return attrs
+
+    def create(self, validated_data):
+        # Creating Issue
+        issue = Issue.objects.create(
+            title=validated_data.get('title'),
+            desc=validated_data.get('desc', ''),
+            tag=validated_data.get('tag'),
+            priority=validated_data.get('priority'),
+            project=Project.objects.get(id=self.context.get('project_id')),
+            status=validated_data.get('status'),
+            author_user=self.context.get('request').user,
+            assignee_user=User.objects.get(id=validated_data.get('assignee_user').id),
+        )
+        issue.save()
+        return issue
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.desc = validated_data.get('desc', instance.desc)
+        instance.tag = validated_data.get('tag', instance.tag)
+        instance.priority = validated_data.get('priority', instance.priority)
+        instance.status = validated_data.get('status', instance.status)
+        instance.assignee_user = validated_data.get('assignee_user', instance.assignee_user)
+        instance.save()
+        return instance
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    """Serializer class for Comments"""
 
+    class Meta:
+        model = Comment
+        fields = ['description']
+
+    def create(self, validated_data):
+        # Creating Comment
+        comment = Comment.objects.create(
+            description=validated_data.get('description'),
+            author_user=self.context.get('request').user,
+            issue=Issue.objects.get(id=self.context.get('issue_id')),
+        )
+        comment.save()
+        return comment
+
+    def update(self, instance, validated_data):
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance

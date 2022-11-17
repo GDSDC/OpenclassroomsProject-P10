@@ -12,12 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Project',
+            name='Comment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=60, unique=True)),
-                ('description', models.CharField(blank=True, max_length=512)),
-                ('type', models.CharField(blank=True, max_length=60)),
+                ('description', models.CharField(max_length=512)),
+                ('created_time', models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]

@@ -12,12 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Project',
+            name='Contributor',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=60, unique=True)),
-                ('description', models.CharField(blank=True, max_length=512)),
-                ('type', models.CharField(blank=True, max_length=60)),
+                ('permission', models.CharField(choices=[('READONLY', 'ReadOnly'), ('READANDWRITE', 'ReadAndWrite')], default='READANDWRITE', max_length=12)),
+                ('role', models.CharField(choices=[('AUTHOR', 'Author'), ('CONTRIBUTOR', 'Contributor')], default='CONTRIBUTOR', max_length=12)),
             ],
         ),
     ]
